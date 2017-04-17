@@ -16,6 +16,8 @@ public class test {
 		gui = new CaDSRobotGUISwing(null, gripper, null, hor, null);
 		gui.startGUIRefresh(1000);
 		
+		
+		
 		gripper.isGripperClosed();
 		
 		ICaDSEV3RobotFeedBackListener feed = new Feedbacklistener();
