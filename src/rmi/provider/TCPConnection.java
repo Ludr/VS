@@ -39,6 +39,13 @@ public class TCPConnection {
 	public BlockingQueue<String> getOutputQueue() {
 		return outputQueue;
 	}
+	
+	public static synchronized TCPConnection getInstance() {
+		if (TCPConnection.instance == null) {
+			TCPConnection.instance = new TCPConnection();
+		}
+		return TCPConnection.instance;
+	}
 
 	private TCPConnection() {
 
@@ -46,7 +53,7 @@ public class TCPConnection {
 		intputQueue = new LinkedBlockingDeque<>();
 
 		try {
-			socket = new ServerSocket(8888);
+			socket = new ServerSocket(8889);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -66,15 +73,9 @@ public class TCPConnection {
 		
 		new Thread(new Sender()).start();
 		new Thread(new Receiver()).start();
-		ProviderSkeleton providerSkeleton = ProviderSkeleton.getInstance();
 	}
 
-	public static synchronized TCPConnection getInstance() {
-		if (TCPConnection.instance == null) {
-			TCPConnection.instance = new TCPConnection();
-		}
-		return TCPConnection.instance;
-	}
+	
 
 	public class Sender extends Thread {
 

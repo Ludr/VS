@@ -6,7 +6,7 @@ public class Feedbacklistener implements ICaDSEV3RobotFeedBackListener {
 
 	@Override
 	public void giveFeedbackByJSonTo(JSONObject arg0) {
-		// TODO Auto-generated method stub
+		System.out.println(arg0);
 	}
 
 }
