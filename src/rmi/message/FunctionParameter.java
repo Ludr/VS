@@ -6,8 +6,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class FunctionParameter {
 	
+	
 	@XmlElement
-	public Integer functionName;
+	public String functionName;
 	
 	@XmlElement
 	public Integer percent;

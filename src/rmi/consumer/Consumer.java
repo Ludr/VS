@@ -10,9 +10,9 @@ public class Consumer {
 		
 		
 		
-		IIDLCaDSEV3RMIMoveGripper gripper = new MoveGripperStub();
+		RobotController rc = new RobotController();
 		
-		CaDSRobotGUISwing gui = new CaDSRobotGUISwing(null, gripper, null, null, null);
+		CaDSRobotGUISwing gui = new CaDSRobotGUISwing(null, rc, rc, rc, rc);
 		gui.startGUIRefresh(1000);
 		
 		
