@@ -95,10 +95,14 @@ public class TCPConnection {
 							new InputStreamReader(socket.getInputStream()));
 					String inputLine = "";
 					 while ((inputLine = in.readLine()) != null) {
-					        System.out.println(inputLine);
+						 intputQueue.put(inputLine);
+						 System.out.println(inputLine);
 					    }
 					System.out.println("Finished raeding form Socket");
 				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
