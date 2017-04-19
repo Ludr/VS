@@ -53,11 +53,12 @@ public class ProviderSkeleton extends Thread {
 		case "openGripper":
 			RoboControl.getInstance().openGripper(0);
 			break;
-
 		case "closeGripper":
 			RoboControl.getInstance().closeGripper(0);
 			break;
-
+		case "moveHorizontalToPercent":
+			RoboControl.getInstance().moveHorizontalToPercent(0,functionParameter.percent);
+			break;
 		}
 
 	}
