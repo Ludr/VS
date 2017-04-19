@@ -18,7 +18,6 @@ public class ConsumerStub implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMo
 	
 	private BlockingQueue<String> outputQueue;
 	
-	
 	public ConsumerStub() {
 		outputQueue = TCPConnection.getInstance().getOutputQueue();
 	}
@@ -100,7 +99,6 @@ public class ConsumerStub implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMo
 			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
 
 			jaxbMarshaller.marshal(params, writer);
-			
 			
 		} catch (JAXBException e) {
 			e.printStackTrace();

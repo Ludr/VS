@@ -5,17 +5,20 @@ import org.cads.ev3.gui.swing.CaDSRobotGUISwing;
 import org.cads.ev3.rmi.consumer.ICaDSRMIConsumer;
 
 public class Consumer implements ICaDSRMIConsumer{
+	
+	public static CaDSRobotGUISwing gui;
+	
 	public static void main(String[] args) {
 		// Start Gui and Stubs/Skeleton
 		ICaDSRobotGUIUpdater guiUpdater = new RobotGuiUpdater();
 		ConsumerStub rc = new ConsumerStub();
 		
 		ICaDSRMIConsumer c = new Consumer();
+		ConsumerSkeleton skel = ConsumerSkeleton.getInstance();
 		c.register(guiUpdater);
 		
-		CaDSRobotGUISwing gui = new CaDSRobotGUISwing(null, rc, rc, rc, rc);
+		gui = new CaDSRobotGUISwing(null, rc, rc, rc, rc);
 		gui.startGUIRefresh(1000);
-		
 		
 	}
 

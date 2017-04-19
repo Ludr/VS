@@ -43,7 +43,7 @@ public class TCPConnection {
 		intputQueue = new LinkedBlockingDeque<>();
 
 		try {
-			socket = new Socket("localhost", 8889);
+			socket = new Socket("10.0.1.1", 8889);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
