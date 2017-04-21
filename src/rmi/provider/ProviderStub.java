@@ -1,7 +1,6 @@
 package rmi.provider;
 
 import java.io.StringWriter;
-import java.util.concurrent.BlockingQueue;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -16,11 +15,28 @@ import rmi.message.FunctionParameter;
 
 public class ProviderStub implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHorizontal, IIDLCaDSEV3RMIMoveVertical, IIDLCaDSEV3RMIUltraSonic{
 	
-	private BlockingQueue<String> outputQueue;
+	private JAXBContext jaxbContext ;
+	private Marshaller jaxbMarshaller;
+	
+	private static ProviderStub instance;
+	
+	public static synchronized ProviderStub getInstance(){
+		if (ProviderStub.instance == null){
+			ProviderStub.instance = new ProviderStub();
+		}
+		return ProviderStub.instance;
+	}
 	
 	
-	public ProviderStub() {
-		outputQueue = TCPConnection.getInstance().getOutputQueue();
+	private ProviderStub() {
+		try {
+			jaxbContext = JAXBContext.newInstance(FunctionParameter.class);
+			jaxbMarshaller = jaxbContext.createMarshaller();
+		} catch (JAXBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 	
 	@Override
@@ -93,8 +109,6 @@ public class ProviderStub implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMo
 		params.returnValue = returnValue;
 		
 		try {
-			JAXBContext jaxbContext = JAXBContext.newInstance(FunctionParameter.class);
-			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 
 			// output pretty printed
 			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
@@ -106,7 +120,7 @@ public class ProviderStub implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMo
 			e.printStackTrace();
 		}
 		
-		outputQueue.put(writer.toString());
+		TCPConnection.getInstance().getOutputQueue().put(writer.toString());
 		return writer.toString();
 		
 	}

@@ -1,9 +1,7 @@
 package rmi.provider;
 
-import org.cads.ev3.middleware.CaDSEV3RobotStudentImplementation;
+import org.cads.ev3.middleware.CaDSEV3RobotHAL;
 import org.cads.ev3.middleware.CaDSEV3RobotType;
-import org.cads.ev3.middleware.hal.ICaDSEV3RobotFeedBackListener;
-import org.cads.ev3.middleware.hal.ICaDSEV3RobotStatusListener;
 
 public class Provider {
 
@@ -13,10 +11,10 @@ public class Provider {
 
 		RoboControl roboControl = RoboControl.getInstance();
 
-		ICaDSEV3RobotFeedBackListener feed = new Feedbacklistener();
-
-		CaDSEV3RobotStudentImplementation HalInstance = CaDSEV3RobotStudentImplementation
-				.createInstance(CaDSEV3RobotType.SIMULATION, roboControl, feed);
+		StatusFeedbackListener stfbls = new StatusFeedbackListener();
+		
+		CaDSEV3RobotHAL HalInstance = CaDSEV3RobotHAL
+				.createInstance(CaDSEV3RobotType.REAL, stfbls, stfbls);
 
 		TCPConnection Comm = TCPConnection.getInstance();
 	}

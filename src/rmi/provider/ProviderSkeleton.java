@@ -1,12 +1,11 @@
 package rmi.provider;
 
-import javax.xml.bind.*;
-
-import rmi.provider.TCPConnection.Sender;
-
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.StringReader;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
 
 /*
  * 
@@ -15,10 +14,20 @@ import java.io.StringReader;
 public class ProviderSkeleton extends Thread {
 
 	private static ProviderSkeleton instance;
-	private TCPConnection tcpConnection;
+	private JAXBContext jaxbContext; 
+
+	private static Unmarshaller jaxbUnmarshaller;
 
 	private ProviderSkeleton() {
+		try {
+			jaxbContext = JAXBContext.newInstance(FunctionParameter.class);
+			jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+		} catch (JAXBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
+		
 	}
 
 	public static synchronized ProviderSkeleton getInstance() {
@@ -44,9 +53,7 @@ public class ProviderSkeleton extends Thread {
 	public static void unmarshall(String XMLinput) throws Exception {
 		StringReader reader = new StringReader(XMLinput);
 
-		JAXBContext jaxbContext = JAXBContext.newInstance(FunctionParameter.class);
-
-		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+		
 		FunctionParameter functionParameter = (FunctionParameter) jaxbUnmarshaller.unmarshal(reader);
 
 		switch (functionParameter.functionName) {
@@ -59,7 +66,13 @@ public class ProviderSkeleton extends Thread {
 		case "moveHorizontalToPercent":
 			RoboControl.getInstance().moveHorizontalToPercent(0,functionParameter.percent);
 			break;
+		case "moveVerticalToPercent":
+			RoboControl.getInstance().moveVerticalToPercent(0,functionParameter.percent);
+			break;
 		}
+		
+		
+		System.out.println(System.nanoTime() / 1000000);
 
 	}
 
