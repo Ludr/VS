@@ -7,6 +7,8 @@ public class Provider {
 
 	public static void main(String[] args) {
 
+		
+		
 		ProviderSkeleton providerSkeleton = ProviderSkeleton.getInstance();
 
 		RoboControl roboControl = RoboControl.getInstance();

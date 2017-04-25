@@ -7,6 +7,8 @@ import org.json.simple.JSONObject;
 
 public class StatusFeedbackListener implements ICaDSEV3RobotStatusListener, ICaDSEV3RobotFeedBackListener {
 
+	private boolean isGripperClosed = true;
+	
 	@Override
 	public void giveFeedbackByJSonTo(JSONObject arg0) {
 		// TODO Auto-generated method stub
@@ -16,31 +18,49 @@ public class StatusFeedbackListener implements ICaDSEV3RobotStatusListener, ICaD
 	@Override
 	public void onStatusMessage(JSONObject arg0) {
 		// TODO Auto-generated method stub
+		RoboControl rc = RoboControl.getInstance();
 		String state = arg0.get("state").toString();
-		// System.out.println(arg0);
+//		 System.out.println(arg0);
 
 		try {
 			if (state.equals("gripper")) {
 				String value = arg0.get("value").toString();
-				if (value.equals("open")) {
+				if (value.equals("open") && isGripperClosed) {
+					isGripperClosed = false;
 					ProviderStub.getInstance().openGripper(0);
-				} else {
+				} else if( value.equals("closed") && !isGripperClosed) {
+					isGripperClosed = true;
 					ProviderStub.getInstance().closeGripper(0);
 				}
 			} else if (state.equals("horizontal")) {
-				String value = arg0.get("percent").toString();
-				RoboControl.getInstance().setCurrentHorizontalPercent(Integer.valueOf(value));
-				// System.out.println(currentPercentHorizontal);
-				if (RoboControl.getInstance().getCurrentHorizontalPercent() == RoboControl.getInstance()
-						.getTargetHorizontalPercent()) {
-					CaDSEV3RobotHAL.getInstance().stop_h();
+				int newValue = Integer.valueOf(arg0.get("percent").toString());
+				if (rc.getCurrentHorizontalPercent() < newValue) {
+					rc.setCurrentHorizontalPercent(newValue);
+					ProviderStub.getInstance().moveHorizontalToPercent(0, newValue);
+					if (rc.getTargetHorizontalPercent() <= rc.getCurrentHorizontalPercent()) {
+						CaDSEV3RobotHAL.getInstance().stop_h();
+					}
+				} else if (rc.getCurrentHorizontalPercent() > newValue) {
+					rc.setCurrentHorizontalPercent(newValue);
+					ProviderStub.getInstance().moveHorizontalToPercent(0, newValue);
+					if (rc.getTargetHorizontalPercent() >= rc.getCurrentHorizontalPercent()) {
+						CaDSEV3RobotHAL.getInstance().stop_h();
+					}
 				}
 			} else if (state.equals("vertical")) {
-				String value = arg0.get("percent").toString();
-				RoboControl.getInstance().setCurrentVerticalPercent(Integer.valueOf(value));
-				if (RoboControl.getInstance().getCurrentVerticalPercent() >= RoboControl.getInstance()
-						.getTargetVerticalPercent()) {
-					CaDSEV3RobotHAL.getInstance().stop_v();
+				int newValue = Integer.valueOf(arg0.get("percent").toString());
+				if (rc.getCurrentVerticalPercent() < newValue) {
+					rc.setCurrentVerticalPercent(newValue);
+					ProviderStub.getInstance().moveVerticalToPercent(0, newValue);
+					if (rc.getTargetVerticalPercent() <= rc.getCurrentVerticalPercent()) {
+						CaDSEV3RobotHAL.getInstance().stop_v();
+					}
+				} else if (rc.getCurrentVerticalPercent() > newValue) {
+					rc.setCurrentVerticalPercent(newValue);
+					ProviderStub.getInstance().moveVerticalToPercent(0, newValue);
+					if (rc.getTargetVerticalPercent() >= rc.getCurrentVerticalPercent()) {
+						CaDSEV3RobotHAL.getInstance().stop_v();
+					}
 				}
 			}
 		} catch (Exception e) {

@@ -96,7 +96,7 @@ public class TCPConnection {
 					String inputLine = "";
 					 while ((inputLine = in.readLine()) != null) {
 						 intputQueue.put(inputLine);
-//						 System.out.println(inputLine);
+						 System.out.println(inputLine);
 					    }
 					System.out.println("Finished raeding form Socket");
 				} catch (IOException e) {

@@ -17,6 +17,8 @@ public class RoboControl implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMov
 	
 	private int currentVerticalPercent = 0;
 	private int targetVerticalPercent = 0;
+	
+	private int isGripperClosed = 1;
 
 	public int getTargetVerticalPercent() {
 		return targetVerticalPercent;
@@ -145,6 +147,7 @@ public class RoboControl implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMov
 
 	@Override
 	public int closeGripper(int arg0) throws Exception {
+		isGripperClosed = 1;
 		CaDSEV3RobotHAL.getInstance().doClose();
 		return 0;
 	}
@@ -152,11 +155,13 @@ public class RoboControl implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMov
 	@Override
 	public int isGripperClosed() throws Exception {
 		// TODO Auto-generated method stub
-		return 0;
+		return isGripperClosed;
 	}
+	
 
 	@Override
 	public int openGripper(int arg0) throws Exception {
+		isGripperClosed = 0;
 		CaDSEV3RobotHAL.getInstance().doOpen();
 		return 0;
 	}
