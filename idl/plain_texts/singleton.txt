@@ -1,0 +1,18 @@
+private static %s instance;
+
+public static synchronized %s getInstance() {
+  if (%s.instance == null) {
+    %s.instance = new %s();
+  }
+  return %s.instance;
+}
+
+private %s() {
+  try {
+    jaxbContext = JAXBContext.newInstance(FunctionParameter.class);
+    jaxbMarshaller = jaxbContext.createMarshaller();
+  } catch (JAXBException e) {
+    // TODO Auto-generated catch block
+    e.printStackTrace();
+  }
+}

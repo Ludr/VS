@@ -1,0 +1,25 @@
+{
+    "ServiceName": "IDLUseGripper",
+    "Function": "moveAround",
+    "Functions": [{
+        "name": "closeGripper",
+        "parameters": [{
+            "position": 1,
+            "type": "int",
+            "name": "integer"
+        }],
+        "returnType": "int"
+    }, {
+        "name": "openGripper",
+        "parameters": [{
+            "position": 1,
+            "type": "int",
+            "name": "integer"
+        }, {
+            "position": 2,
+            "type": "String",
+            "name": "string"
+        }],
+        "returnType": "int"
+    }]
+}

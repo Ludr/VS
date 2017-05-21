@@ -1,7 +1,6 @@
 package rmi.consumer;
 
 import java.io.StringWriter;
-import java.util.concurrent.BlockingQueue;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -14,14 +13,31 @@ import org.cads.ev3.rmi.generated.cadSRMIInterface.IIDLCaDSEV3RMIUltraSonic;
 
 import rmi.message.FunctionParameter;
 
-public class ConsumerStub implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHorizontal, IIDLCaDSEV3RMIMoveVertical, IIDLCaDSEV3RMIUltraSonic{
-	
-	private BlockingQueue<String> outputQueue;
-	
-	public ConsumerStub() {
-		outputQueue = TCPConnection.getInstance().getOutputQueue();
+public class ConsumerStub implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHorizontal,
+		IIDLCaDSEV3RMIMoveVertical, IIDLCaDSEV3RMIUltraSonic {
+
+	private JAXBContext jaxbContext;
+	private Marshaller jaxbMarshaller;
+
+	private static ConsumerStub instance;
+
+	public static synchronized ConsumerStub getInstance() {
+		if (ConsumerStub.instance == null) {
+			ConsumerStub.instance = new ConsumerStub();
+		}
+		return ConsumerStub.instance;
 	}
-	
+
+	private ConsumerStub() {
+		try {
+			jaxbContext = JAXBContext.newInstance(FunctionParameter.class);
+			jaxbMarshaller = jaxbContext.createMarshaller();
+		} catch (JAXBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	@Override
 	public int closeGripper(int arg0) throws Exception {
 		marshall(null, null);
@@ -38,7 +54,7 @@ public class ConsumerStub implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMo
 		marshall(null, null);
 		return 0;
 	}
-	
+
 	@Override
 	public int isUltraSonicOccupied() throws Exception {
 		marshall(null, null);
@@ -74,39 +90,37 @@ public class ConsumerStub implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMo
 		marshall(null, null);
 		return 0;
 	}
-	
+
 	/**
 	 * marshalls a method call
-	 * @param percent - percentage of movement, null to ignore this parameter
-	 * @param returnValue - null to ignore returnvalue
-	 * @return
-	 * 		returns marshalled object as xml string
+	 *
+	 * @param percent
+	 *            - percentage of movement, null to ignore this parameter
+	 * @param returnValue
+	 *            - null to ignore returnvalue
+	 * @return returns marshalled object as xml string
 	 * @throws InterruptedException
 	 */
-	private String marshall(Integer percent, Integer returnValue) throws InterruptedException{
+	private String marshall(Integer percent, Integer returnValue) throws InterruptedException {
 		StringWriter writer = new StringWriter();
-		
+
 		FunctionParameter params = new FunctionParameter();
 		params.functionName = Thread.currentThread().getStackTrace()[2].getMethodName();
 		params.percent = percent;
 		params.returnValue = returnValue;
-		
+
 		try {
-			JAXBContext jaxbContext = JAXBContext.newInstance(FunctionParameter.class);
-			Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
 
 			// output pretty printed
 			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
 
 			jaxbMarshaller.marshal(params, writer);
-			
+
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}
-		
-		outputQueue.put(writer.toString());
-		return writer.toString();
-		
-	}
 
+		TCPConnection.getInstance().getOutputQueue().put(writer.toString());
+		return writer.toString();
+	}
 }

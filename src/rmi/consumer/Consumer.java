@@ -11,7 +11,7 @@ public class Consumer implements ICaDSRMIConsumer{
 	public static void main(String[] args) {
 		// Start Gui and Stubs/Skeleton
 		ICaDSRobotGUIUpdater guiUpdater = new RobotGuiUpdater();
-		ConsumerStub rc = new ConsumerStub();
+		ConsumerStub rc = ConsumerStub.getInstance();
 		
 		ICaDSRMIConsumer c = new Consumer();
 		ConsumerSkeleton skel = ConsumerSkeleton.getInstance();
