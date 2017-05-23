@@ -104,6 +104,7 @@ public class ProviderStub implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMo
 		StringWriter writer = new StringWriter();
 		
 		FunctionParameter params = new FunctionParameter();
+		params.robotName = SessionControl.getInstance().robotName; 
 		params.functionName = Thread.currentThread().getStackTrace()[2].getMethodName();
 		params.percent = percent;
 		params.returnValue = returnValue;
@@ -120,7 +121,7 @@ public class ProviderStub implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMo
 			e.printStackTrace();
 		}
 		
-		TCPConnection.getInstance().getOutputQueue().put(writer.toString());
+		TCPConnection.getInstance().getOutputQueueService().put(writer.toString());
 		return writer.toString();
 		
 	}

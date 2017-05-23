@@ -6,6 +6,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import rmi.message.*;
+
 
 /*
  * 
@@ -42,7 +44,7 @@ public class ProviderSkeleton extends Thread {
 		while (true) {
 			try {
 
-				unmarshall(TCPConnection.getInstance().getIntputQueue().take());
+				unmarshall(TCPConnection.getInstance().getIntputQueueService().take());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -1,23 +1,58 @@
 package rmi.consumer;
 
+import java.io.StringReader;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
 import org.cads.ev3.rmi.generated.cadSRMIInterface.IIDLCaDSEV3RMIMoveGripper;
 import org.cads.ev3.rmi.generated.cadSRMIInterface.IIDLCaDSEV3RMIMoveHorizontal;
 import org.cads.ev3.rmi.generated.cadSRMIInterface.IIDLCaDSEV3RMIMoveVertical;
 import org.cads.ev3.rmi.generated.cadSRMIInterface.IIDLCaDSEV3RMIUltraSonic;
 
-public class GuiUpdater implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHorizontal, IIDLCaDSEV3RMIMoveVertical,
-		IIDLCaDSEV3RMIUltraSonic {
+import rmi.message.FunctionParameter;
+import rmi.message.RegisterMessage;
+
+public class GuiUpdater extends Thread implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHorizontal, IIDLCaDSEV3RMIMoveVertical,
+		IIDLCaDSEV3RMIUltraSonic  {
 
 	private static GuiUpdater instance;
 	
-	public static synchronized GuiUpdater getInstance(){
+	int maxRobots = 20;
+	
+	Unmarshaller jaxbUnmarshaller;
+	JAXBContext jaxbContext;
+	
+	public String[] connectedRobots = new String[maxRobots];
+	
+	public static synchronized GuiUpdater getInstance() throws JAXBException{
 		if (GuiUpdater.instance == null) {
 			GuiUpdater.instance = new GuiUpdater();
+			new Thread(instance).start();
 		}
 		return GuiUpdater.instance;
 	}
 	
-	private GuiUpdater() {
+	public void run() {
+		while (true) {
+			try {
+
+				unmarshall(TCPConnection.getInstance().getIntputQueueRegistry().take());
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private GuiUpdater() throws JAXBException {
+		
+		
+			jaxbContext = JAXBContext.newInstance(RegisterMessage.class);
+			jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+		
+		
 	}
 	
 	@Override
@@ -75,4 +110,26 @@ public class GuiUpdater implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMove
 		Consumer.gui.setGripperOpen();
 		return 0;
 	}
+	
+	
+	private void unmarshall(String XMLinput) throws JAXBException{
+		
+		StringReader reader = new StringReader(XMLinput);
+		
+		RegisterMessage newRobot = (RegisterMessage) jaxbUnmarshaller.unmarshal(reader);
+		
+		for (int i = 0; i < connectedRobots.length; i++) {
+			
+			if(connectedRobots[i] == null){
+				connectedRobots[i] = newRobot.name;
+			}
+		else if(connectedRobots[i] == newRobot.name){
+				System.out.println("Duplicate Robot received");
+			}
+				
+		}
+		
+	}
 }
+
+

@@ -7,26 +7,32 @@ import java.io.InterruptedIOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
+
+//TODO 2 Ports aufmachen ( Anmeldung und Service bearbeitung, anpassung der outputqueues!)
 
 public class TCPConnection {
 
 	private static TCPConnection instance;
 
-	private ServerSocket socket;
-	private Socket client;
+	private Socket serviceSocket;
+	private Socket registrySocket;
 
-	private BlockingQueue<String> outputQueue;
-	private BlockingQueue<String> intputQueue;
+	private BlockingQueue<String> outputQueueRegistry;
+	private BlockingQueue<String> intputQueueRegistry;
+
+	private BlockingQueue<String> outputQueueService;
+	private BlockingQueue<String> intputQueueService;
 
 	/**
 	 * Read data from socket
 	 * 
 	 * @return
 	 */
-	public BlockingQueue<String> getIntputQueue() {
-		return intputQueue;
+	public BlockingQueue<String> getIntputQueueRegistry() {
+		return intputQueueRegistry;
 	}
 
 	/**
@@ -34,10 +40,28 @@ public class TCPConnection {
 	 * 
 	 * @return
 	 */
-	public BlockingQueue<String> getOutputQueue() {
-		return outputQueue;
+	public BlockingQueue<String> getOutputQueueRegistry() {
+		return outputQueueRegistry;
 	}
-	
+
+	/**
+	 * Read data from socket
+	 * 
+	 * @return
+	 */
+	public BlockingQueue<String> getIntputQueueService() {
+		return intputQueueService;
+	}
+
+	/**
+	 * Write data to socket
+	 * 
+	 * @return
+	 */
+	public BlockingQueue<String> getOutputQueueService() {
+		return outputQueueService;
+	}
+
 	public static synchronized TCPConnection getInstance() {
 		if (TCPConnection.instance == null) {
 			TCPConnection.instance = new TCPConnection();
@@ -47,73 +71,98 @@ public class TCPConnection {
 
 	private TCPConnection() {
 
-		outputQueue = new LinkedBlockingDeque<>();
-		intputQueue = new LinkedBlockingDeque<>();
+		outputQueueRegistry = new LinkedBlockingDeque<>();
+		intputQueueRegistry = new LinkedBlockingDeque<>();
+		outputQueueService = new LinkedBlockingDeque<>();
+		intputQueueService = new LinkedBlockingDeque<>();
 
 		try {
-			socket = new ServerSocket(8889);
+			serviceSocket = new Socket("localhost", 8888);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-		try
-		{
-		  client = socket.accept();
-		  // ...
-		}
-		catch ( InterruptedIOException e)
-		{
-		  System.err.println( "Timeout nach einer Minute!" );
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		new Thread(new Sender()).start();
-		new Thread(new Receiver()).start();
-	}
 
-	
+		try {
+			registrySocket = new Socket("localhost", 8889);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		new Thread(new Sender(registrySocket, outputQueueRegistry)).start();
+		new Thread(new Receiver(registrySocket, intputQueueRegistry)).start();
+		new Thread(new Sender(serviceSocket, outputQueueService)).start();
+		new Thread(new Receiver(serviceSocket, intputQueueService)).start();
+
+	}
 
 	public class Sender extends Thread {
 
 		PrintWriter out;
-		
-		public Sender() {
-			try {
-				out = new PrintWriter(client.getOutputStream(), true);
-			} catch (IOException e) {
-				e.printStackTrace();
-			} 
+		BlockingQueue<String> outqueue;
+		Socket localSocket;
+
+		public Sender(Socket socket, BlockingQueue<String> outputqueue) {
+			this.outqueue = outputqueue;
+			
+			localSocket = socket;
+			
+//			try {
+//				out = new PrintWriter(socket.getOutputStream(), true);
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			}
 		}
-		
+
 		public void run() {
 			String str = "";
 			while (!isInterrupted()) {
+				
+				
+				
 				try {
-					str = outputQueue.take();
-					out.println(str);
+					str = outqueue.take();
+					
+					
+					//out.println(str);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				try {
+					//ByteBuffer buffer = ByteBuffer.wrap(str.getBytes());
+					//localSocket.getChannel().write(buffer);
+					
+					localSocket.getOutputStream().write(str.getBytes("UTF-16"));
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 			}
 		}
 	}
 
 	public class Receiver extends Thread {
 
+		private Socket socket;
+		BlockingQueue<String> inputqueue;
+
+		public Receiver(Socket socket, BlockingQueue<String> inputqueue) {
+			this.socket = socket;
+			this.inputqueue = inputqueue;
+		}
+
 		public void run() {
 			while (!isInterrupted()) {
 				try {
 					System.out.println("Receiver Reading from Socket");
 					BufferedReader in = new BufferedReader(
-							new InputStreamReader(client.getInputStream()));
+							new InputStreamReader(socket.getInputStream()));
 					String inputLine = "";
-					 while ((inputLine = in.readLine()) != null) {
-						    intputQueue.put(inputLine);
-					        System.out.println(inputLine);
-					    }
+					while ((inputLine = in.readLine()) != null) {
+						inputqueue.put(inputLine);
+						System.out.println(inputLine);
+					}
 					System.out.println("Finished reading from Socket");
 				} catch (IOException e) {
 					// TODO Auto-generated catch block

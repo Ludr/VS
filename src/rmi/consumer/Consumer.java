@@ -1,14 +1,23 @@
 package rmi.consumer;
 
+import java.net.InetAddress;
+
+import javax.xml.bind.JAXBException;
+
 import org.cads.ev3.gui.ICaDSRobotGUIUpdater;
 import org.cads.ev3.gui.swing.CaDSRobotGUISwing;
 import org.cads.ev3.rmi.consumer.ICaDSRMIConsumer;
+
 
 public class Consumer implements ICaDSRMIConsumer{
 	
 	public static CaDSRobotGUISwing gui;
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws JAXBException {
+		
+		TCPConnection comm = TCPConnection.getInstance();
+		comm.ipAdress = args[0];
+		
 		// Start Gui and Stubs/Skeleton
 		ICaDSRobotGUIUpdater guiUpdater = new RobotGuiUpdater();
 		ConsumerStub rc = new ConsumerStub();
@@ -20,6 +29,8 @@ public class Consumer implements ICaDSRMIConsumer{
 		gui = new CaDSRobotGUISwing(null, rc, rc, rc, rc);
 		gui.startGUIRefresh(1000);
 		
+		RegisterService registry = new RegisterService();
+		registry.registerAtBroker("gui");
 	}
 
 	@Override
@@ -34,4 +45,8 @@ public class Consumer implements ICaDSRMIConsumer{
     public void update(String comboBoxText) {
         System.out.println("Combo Box updated " + comboBoxText);
     }
+    
+    
+    
+	
 }

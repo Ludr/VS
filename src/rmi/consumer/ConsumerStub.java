@@ -19,7 +19,7 @@ public class ConsumerStub implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMo
 	private BlockingQueue<String> outputQueue;
 	
 	public ConsumerStub() {
-		outputQueue = TCPConnection.getInstance().getOutputQueue();
+		outputQueue = TCPConnection.getInstance().getOutputQueueService();
 	}
 	
 	@Override
@@ -87,6 +87,9 @@ public class ConsumerStub implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMo
 		StringWriter writer = new StringWriter();
 		
 		FunctionParameter params = new FunctionParameter();
+		//params.robotName = ?  TODO: Holen des aktuellen Roboternamens aus der GUI!
+		
+		params.robotName = "robot1";
 		params.functionName = Thread.currentThread().getStackTrace()[2].getMethodName();
 		params.percent = percent;
 		params.returnValue = returnValue;
