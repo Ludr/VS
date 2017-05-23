@@ -21,9 +21,13 @@ public class Broker implements Runnable {
 
 	private final ByteBuffer buffer = ByteBuffer.allocate(16384);
 
-	private JAXBContext jaxbContext;
-	private static Unmarshaller jaxbUnmarshaller;
-	private static Marshaller jaxbMarshaller;
+	private JAXBContext jaxbContextFunction;
+	private JAXBContext jaxbContextRegister;
+	
+	private static Unmarshaller jaxbUnmarshallerFunction;
+	private static Marshaller jaxbMarshallerFunction;
+	private static Unmarshaller jaxbUnmarshallerRegister;
+	private static Marshaller jaxbMarshallerRegister;
 	// The port we will listen on
 	private int service_port;
 	private int register_port;
@@ -32,10 +36,18 @@ public class Broker implements Runnable {
 		this.service_port = service_port;
 		this.register_port = register_port;
 		offeredServices[0] = new Service("Kevin", null,0, null, null);
-		jaxbContext = JAXBContext.newInstance(FunctionParameter.class);
+		
+		jaxbContextFunction = JAXBContext.newInstance(FunctionParameter.class);
+		
+		jaxbContextRegister =JAXBContext.newInstance(RegisterMessage.class);
 
-		jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-		jaxbMarshaller = jaxbContext.createMarshaller();
+		jaxbUnmarshallerFunction = jaxbContextFunction.createUnmarshaller();
+		jaxbMarshallerFunction = jaxbContextFunction.createMarshaller();
+		
+		jaxbUnmarshallerRegister = jaxbContextRegister.createUnmarshaller();
+		jaxbMarshallerRegister = jaxbContextRegister.createMarshaller();
+		
+		
 		new Thread(this).start();
 	}
 
@@ -75,13 +87,6 @@ public class Broker implements Runnable {
 			registerSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
 			System.out.println("Listening on port " + register_port);
 
-			try {
-				jaxbContext = JAXBContext.newInstance(FunctionParameter.class);
-				jaxbMarshaller = jaxbContext.createMarshaller();
-			} catch (JAXBException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 
 			while (true) {
 				// See if we've had any activity -- either
@@ -200,17 +205,18 @@ public class Broker implements Runnable {
 
 		char newLine = '\n';
 		char current = 0;
-		while (current != newLine && buffer.hasRemaining()) {
+		while ( buffer.hasRemaining()) {
 			current = buffer.getChar();
 			System.out.println(current);
 			s += current;
 		}
 		System.out.println("Buffer: " + s);
-		if (current != newLine) {
-			return null;
-		}
+//		if (current != newLine) {
+//			return null;
+//		}
 		buffer.compact();
 		buffer.flip();
+		s = s.substring(1);
 		return s;
 	}
 
@@ -242,14 +248,16 @@ public class Broker implements Runnable {
 		
 		System.out.println(message.name);
 
-		if (message.name == "gui") {
-
+		if (message.name.equals("gui") ) {
+			
 			for (int i = 0; i < offeredServices.length; i++) {
 				if (offeredServices[i] == null) {
 					offeredServices[i] = new Service(message.name, null,
 							message.portNr, null, sc.socket());
 				}
 			}
+			System.out.println(offeredServices[0].getRobotName());
+			System.out.println(offeredServices[1].getRobotName());
 			handleServiceDiscovery(sc.socket());
 
 		} else {
@@ -315,6 +323,8 @@ public class Broker implements Runnable {
 
 		String[] connectedRobots;
 		connectedRobots = set.toArray(new String[set.size()]);
+		
+		
 
 		for (int i = 0; i < connectedRobots.length; i++) {
 			RegisterMessage serviceDiscoveryMessage = new RegisterMessage();
@@ -327,8 +337,14 @@ public class Broker implements Runnable {
 			writer = marshallServiceDiscovery(serviceDiscoveryMessage);
 
 			String message = writer.toString();
-
+			
+			System.out.println("Nachricht an Client:"+message);
+			
+			System.out.println(message.length());
+			
 			writeLine(message, buffer);
+			
+			
 
 			socket.getChannel().write(buffer);
 
@@ -407,9 +423,9 @@ public class Broker implements Runnable {
 		try {
 
 			// output pretty printed
-			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
+			jaxbMarshallerFunction.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
 
-			jaxbMarshaller.marshal(functionParameter, writer);
+			jaxbMarshallerFunction.marshal(functionParameter, writer);
 
 		} catch (JAXBException e) {
 			e.printStackTrace();
@@ -426,9 +442,9 @@ public class Broker implements Runnable {
 		try {
 
 			// output pretty printed
-			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
+			jaxbMarshallerRegister.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
 
-			jaxbMarshaller.marshal(serviceDiscoveryMessage, writer);
+			jaxbMarshallerRegister.marshal(serviceDiscoveryMessage, writer);
 
 		} catch (JAXBException e) {
 			e.printStackTrace();
@@ -441,10 +457,12 @@ public class Broker implements Runnable {
 			throws Exception {
 
 		System.out.println("unmarshallRegisterMessage");
+		System.out.println(XMLinput);
+		
 		
 		StringReader reader = new StringReader(XMLinput);
 
-		RegisterMessage message = (RegisterMessage) jaxbUnmarshaller
+		RegisterMessage message = (RegisterMessage) jaxbUnmarshallerRegister
 				.unmarshal(reader);
 
 		return message;
@@ -456,7 +474,7 @@ public class Broker implements Runnable {
 
 		StringReader reader = new StringReader(XMLinput);
 
-		FunctionParameter functionParameter = (FunctionParameter) jaxbUnmarshaller
+		FunctionParameter functionParameter = (FunctionParameter) jaxbUnmarshallerFunction
 				.unmarshal(reader);
 
 		return functionParameter;

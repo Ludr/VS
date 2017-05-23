@@ -28,7 +28,7 @@ public class RegisterService {
 
 	public void registerAtBroker(String Name) {
 		try {
-			marshall(Name, null, null, null, 8888);
+			marshall(Name, "whatever", "whatever1", "whatever2", 8888);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -68,7 +68,7 @@ public class RegisterService {
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}
-
+		System.out.println(writer.toString());
 		TCPConnection.getInstance().getOutputQueueRegistry()
 				.put(writer.toString());
 		return writer.toString();
