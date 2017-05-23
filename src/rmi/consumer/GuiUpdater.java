@@ -118,6 +118,8 @@ public class GuiUpdater extends Thread implements IIDLCaDSEV3RMIMoveGripper, IID
 		
 		RegisterMessage newRobot = (RegisterMessage) jaxbUnmarshaller.unmarshal(reader);
 		
+		System.out.println(newRobot.name);
+		
 		for (int i = 0; i < connectedRobots.length; i++) {
 			
 			if(connectedRobots[i] == null){

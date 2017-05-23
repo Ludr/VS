@@ -8,6 +8,7 @@ import java.io.InterruptedIOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.charset.Charset;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
@@ -171,8 +172,10 @@ public class TCPConnection {
 			while (!isInterrupted()) {
 				try {
 					System.out.println("Receiver Reading from Socket");
+					
+					
 					BufferedReader in = new BufferedReader(
-							new InputStreamReader(socket.getInputStream()));
+							new InputStreamReader(socket.getInputStream(),Charset.forName("UTF-16")));
 					String inputLine = "";
 					while ((inputLine = in.readLine()) != null) {
 						inputqueue.put(inputLine);

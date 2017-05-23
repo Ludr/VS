@@ -28,9 +28,14 @@ public class Broker implements Runnable {
 	private int service_port;
 	private int register_port;
 
-	public Broker(int service_port, int register_port) {
+	public Broker(int service_port, int register_port) throws JAXBException {
 		this.service_port = service_port;
 		this.register_port = register_port;
+		offeredServices[0] = new Service("Kevin", null,0, null, null);
+		jaxbContext = JAXBContext.newInstance(FunctionParameter.class);
+
+		jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+		jaxbMarshaller = jaxbContext.createMarshaller();
 		new Thread(this).start();
 	}
 
@@ -218,7 +223,7 @@ public class Broker implements Runnable {
 	}
 
 	private void processInputRegistry(SocketChannel sc) throws Exception {
-
+		System.out.println("processInputRegisry");
 
 		sc.read(buffer);
 		
@@ -229,10 +234,13 @@ public class Broker implements Runnable {
 		String inputline = readLine(buffer);
 		
 		if(inputline == null){
+			System.out.println("Input ist gleich null");
 			return;
 		}
 
 		RegisterMessage message = unmarshallRegisterMessage(inputline);
+		
+		System.out.println(message.name);
 
 		if (message.name == "gui") {
 
@@ -289,7 +297,7 @@ public class Broker implements Runnable {
 	 * @throws IOException
 	 */
 	private void handleServiceDiscovery(Socket socket) throws IOException {
-
+		System.out.println("handleServiceDiscovery");
 	
 		StringWriter writer;
 
@@ -309,8 +317,13 @@ public class Broker implements Runnable {
 		connectedRobots = set.toArray(new String[set.size()]);
 
 		for (int i = 0; i < connectedRobots.length; i++) {
-			RegisterMessage serviceDiscoveryMessage = new RegisterMessage(
-					connectedRobots[i], null, null, null, 0);
+			RegisterMessage serviceDiscoveryMessage = new RegisterMessage();
+			serviceDiscoveryMessage.name = connectedRobots[i];
+			serviceDiscoveryMessage.service1 = null;
+			serviceDiscoveryMessage.service2 = null;
+			serviceDiscoveryMessage.service3 = null;
+			serviceDiscoveryMessage.portNr = 0;
+			
 			writer = marshallServiceDiscovery(serviceDiscoveryMessage);
 
 			String message = writer.toString();
@@ -427,6 +440,8 @@ public class Broker implements Runnable {
 	public static RegisterMessage unmarshallRegisterMessage(String XMLinput)
 			throws Exception {
 
+		System.out.println("unmarshallRegisterMessage");
+		
 		StringReader reader = new StringReader(XMLinput);
 
 		RegisterMessage message = (RegisterMessage) jaxbUnmarshaller
@@ -449,7 +464,12 @@ public class Broker implements Runnable {
 	}
 
 	public static void main(String[] args) {
-		new Broker(8888, 8889);
+		try {
+			new Broker(8888, 8889);
+		} catch (JAXBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
