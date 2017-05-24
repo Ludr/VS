@@ -15,8 +15,10 @@ public class Consumer implements ICaDSRMIConsumer{
 	
 	public static void main(String[] args) throws JAXBException {
 		
+		//TCPConnection.ipAdress = args[0];
+		TCPConnection.ipAdress = "localhost";
 		TCPConnection comm = TCPConnection.getInstance();
-		comm.ipAdress = args[0];
+		
 		
 		// Start Gui and Stubs/Skeleton
 		ICaDSRobotGUIUpdater guiUpdater = new RobotGuiUpdater();

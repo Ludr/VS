@@ -4,9 +4,7 @@ package rmi.consumer;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.InterruptedIOException;
 import java.io.PrintWriter;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.Charset;
 import java.util.concurrent.BlockingQueue;
@@ -15,7 +13,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 public class TCPConnection {
 	
-	String ipAdress;
+	public static String ipAdress;
 
 	private static TCPConnection instance;
 
@@ -107,55 +105,26 @@ public class TCPConnection {
 			this.outqueue = outputqueue;
 			
 			localSocket = socket;
-//			try {
-//				out = new PrintWriter(socket.getOutputStream(), true);
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
+			try {
+				out = new PrintWriter(socket.getOutputStream(), true);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 
-		
 		public void run() {
 			String str = "";
 			while (!isInterrupted()) {
-				
-				
-				
 				try {
 					str = outqueue.take();
-					
-					
-					//out.println(str);
+					System.out.println("Client sends : "+str);
+					out.println(str);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				try {
-					//ByteBuffer buffer = ByteBuffer.wrap(str.getBytes());
-					//localSocket.getChannel().write(buffer);
-					
-					localSocket.getOutputStream().write(str.getBytes("UTF-16"));
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
 			}
 		}
-		
-		
-//		public void run() {
-//			String str = "";
-//			while (!isInterrupted()) {
-//				try {
-//					str = outqueue.take();
-//					out.println(str);
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//			}
-//		}
 	}
 
 	public class Receiver extends Thread {
@@ -171,15 +140,15 @@ public class TCPConnection {
 		public void run() {
 			while (!isInterrupted()) {
 				try {
-					System.out.println("Receiver Reading from Socket");
+					System.out.println("Receiver Reading from Socket on port "+socket.getPort());
 					
 					
 					BufferedReader in = new BufferedReader(
-							new InputStreamReader(socket.getInputStream(),Charset.forName("UTF-16")));
+							new InputStreamReader(socket.getInputStream()));
 					String inputLine = "";
 					while ((inputLine = in.readLine()) != null) {
 						inputqueue.put(inputLine);
-						System.out.println(inputLine);
+						System.out.println("Client Received : "+inputLine);
 					}
 					System.out.println("Finished reading from Socket");
 				} catch (IOException e) {

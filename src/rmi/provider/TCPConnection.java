@@ -15,6 +15,8 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 public class TCPConnection {
 
+	
+	
 	private static TCPConnection instance;
 
 	private Socket serviceSocket;
@@ -105,39 +107,24 @@ public class TCPConnection {
 			this.outqueue = outputqueue;
 			
 			localSocket = socket;
-			
-//			try {
-//				out = new PrintWriter(socket.getOutputStream(), true);
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
+			try {
+				out = new PrintWriter(socket.getOutputStream(), true);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 
 		public void run() {
 			String str = "";
 			while (!isInterrupted()) {
-				
-				
-				
 				try {
 					str = outqueue.take();
-					
-					
-					//out.println(str);
+					System.out.println("Provider sends : "+str);
+					out.println(str);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				try {
-					//ByteBuffer buffer = ByteBuffer.wrap(str.getBytes());
-					//localSocket.getChannel().write(buffer);
-					
-					localSocket.getOutputStream().write(str.getBytes("UTF-16"));
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
 			}
 		}
 	}
@@ -160,8 +147,8 @@ public class TCPConnection {
 							new InputStreamReader(socket.getInputStream()));
 					String inputLine = "";
 					while ((inputLine = in.readLine()) != null) {
-						inputqueue.put(inputLine);
-						System.out.println(inputLine);
+						TCPConnection.getInstance().intputQueueService.put(inputLine);
+						System.out.println("Provider receives : "+inputLine);
 					}
 					System.out.println("Finished reading from Socket");
 				} catch (IOException e) {

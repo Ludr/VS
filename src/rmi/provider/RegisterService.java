@@ -17,7 +17,7 @@ public class RegisterService {
 	
 	public RegisterService(){
 		try {
-			jaxbContext = JAXBContext.newInstance(FunctionParameter.class);
+			jaxbContext = JAXBContext.newInstance(RegisterMessage.class);
 			jaxbMarshaller = jaxbContext.createMarshaller();
 		} catch (JAXBException e) {
 			// TODO Auto-generated catch block
@@ -51,8 +51,12 @@ public class RegisterService {
 		
 		StringWriter writer = new StringWriter();
 		
-		RegisterMessage registerMessage = new RegisterMessage(robotName,gripperService,horizontalService,verticalService,portNr);
-		
+		RegisterMessage registerMessage = new RegisterMessage();
+		registerMessage.name = robotName;
+		registerMessage.service1 = gripperService;
+		registerMessage.service2 = horizontalService;
+		registerMessage.service3 = verticalService;
+		registerMessage.portNr = portNr;
 		
 		
 		

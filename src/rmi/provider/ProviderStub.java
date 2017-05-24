@@ -41,7 +41,7 @@ public class ProviderStub implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMo
 	
 	@Override
 	public int closeGripper(int arg0) throws Exception {
-		marshall(null, null);
+		marshall(null, 1);
 		return 0;
 	}
 
@@ -52,43 +52,43 @@ public class ProviderStub implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMo
 
 	@Override
 	public int openGripper(int arg0) throws Exception {
-		marshall(null, null);
+		marshall(null, 1);
 		return 0;
 	}
 	
 	@Override
 	public int isUltraSonicOccupied() throws Exception {
-		marshall(null, null);
+		marshall(null, 1);
 		return 0;
 	}
 
 	@Override
 	public int getCurrentVerticalPercent() throws Exception {
-		marshall(null, null);
+		marshall(null, 1);
 		return 0;
 	}
 
 	@Override
 	public int moveVerticalToPercent(int arg0, int arg1) throws Exception {
-		marshall(arg1, null);
+		marshall(arg1, 1);
 		return 0;
 	}
 
 	@Override
 	public int getCurrentHorizontalPercent() throws Exception {
-		marshall(null, null);
+		marshall(null, 1);
 		return 0;
 	}
 
 	@Override
 	public int moveHorizontalToPercent(int arg0, int arg1) throws Exception {
-		marshall(arg1, null);
+		marshall(arg1, 1);
 		return 0;
 	}
 
 	@Override
 	public int stop(int arg0) throws Exception {
-		marshall(null, null);
+		marshall(null, 1);
 		return 0;
 	}
 	
@@ -101,6 +101,7 @@ public class ProviderStub implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMo
 	 * @throws InterruptedException
 	 */
 	private String marshall(Integer percent, Integer returnValue) throws InterruptedException{
+		
 		StringWriter writer = new StringWriter();
 		
 		FunctionParameter params = new FunctionParameter();

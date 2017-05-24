@@ -19,12 +19,14 @@ public class ConsumerStub implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMo
 	private BlockingQueue<String> outputQueue;
 	
 	public ConsumerStub() {
+		
+		// Ist nicht mehr gebraucht, funktioniert so nicht! (Es kommt nichts in der tatsächlichen queue in der TCP connection an
 		outputQueue = TCPConnection.getInstance().getOutputQueueService();
 	}
 	
 	@Override
 	public int closeGripper(int arg0) throws Exception {
-		marshall(null, null);
+		marshall(null, 0);
 		return 0;
 	}
 
@@ -35,43 +37,44 @@ public class ConsumerStub implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMo
 
 	@Override
 	public int openGripper(int arg0) throws Exception {
-		marshall(null, null);
+		marshall(null, 0);
 		return 0;
 	}
 	
 	@Override
 	public int isUltraSonicOccupied() throws Exception {
-		marshall(null, null);
+		marshall(null, 0);
 		return 0;
 	}
 
 	@Override
 	public int getCurrentVerticalPercent() throws Exception {
-		marshall(null, null);
+		marshall(null, 0);
 		return 0;
 	}
 
 	@Override
 	public int moveVerticalToPercent(int arg0, int arg1) throws Exception {
-		marshall(arg1, null);
+		marshall(arg1, 0);
 		return 0;
 	}
 
 	@Override
 	public int getCurrentHorizontalPercent() throws Exception {
-		marshall(null, null);
+		marshall(null, 0);
 		return 0;
 	}
 
 	@Override
 	public int moveHorizontalToPercent(int arg0, int arg1) throws Exception {
-		marshall(arg1, null);
+		System.out.println("moveHorizontalToPercent");
+		marshall(arg1, 0);
 		return 0;
 	}
 
 	@Override
 	public int stop(int arg0) throws Exception {
-		marshall(null, null);
+		marshall(null, 0);
 		return 0;
 	}
 	
@@ -107,7 +110,8 @@ public class ConsumerStub implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMo
 			e.printStackTrace();
 		}
 		
-		outputQueue.put(writer.toString());
+		TCPConnection.getInstance().getOutputQueueService().put(writer.toString());
+		System.out.println("Ready Marshalled :"+writer.toString());
 		return writer.toString();
 		
 	}
