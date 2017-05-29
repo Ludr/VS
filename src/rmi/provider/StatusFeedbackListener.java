@@ -11,7 +11,7 @@ public class StatusFeedbackListener implements ICaDSEV3RobotStatusListener, ICaD
 	
 	@Override
 	public void giveFeedbackByJSonTo(JSONObject arg0) {
-		// TODO Auto-generated method stub
+		System.out.println("Hallo");
 
 	}
 
@@ -34,15 +34,21 @@ public class StatusFeedbackListener implements ICaDSEV3RobotStatusListener, ICaD
 				}
 			} else if (state.equals("horizontal")) {
 				int newValue = Integer.valueOf(arg0.get("percent").toString());
+				
 				if (rc.getCurrentHorizontalPercent() < newValue) {
+					
 					rc.setCurrentHorizontalPercent(newValue);
 					ProviderStub.getInstance().moveHorizontalToPercent(0, newValue);
+					System.out.println("Target: "+rc.getTargetHorizontalPercent()+" current: "+rc.getCurrentHorizontalPercent());
 					if (rc.getTargetHorizontalPercent() <= rc.getCurrentHorizontalPercent()) {
 						CaDSEV3RobotHAL.getInstance().stop_h();
 					}
 				} else if (rc.getCurrentHorizontalPercent() > newValue) {
+					
 					rc.setCurrentHorizontalPercent(newValue);
+					System.out.println("Target: "+rc.getTargetHorizontalPercent()+" current: "+rc.getCurrentHorizontalPercent());
 					ProviderStub.getInstance().moveHorizontalToPercent(0, newValue);
+					
 					if (rc.getTargetHorizontalPercent() >= rc.getCurrentHorizontalPercent()) {
 						CaDSEV3RobotHAL.getInstance().stop_h();
 					}
@@ -67,5 +73,8 @@ public class StatusFeedbackListener implements ICaDSEV3RobotStatusListener, ICaD
 
 		}
 	}
+	
 
 }
+
+

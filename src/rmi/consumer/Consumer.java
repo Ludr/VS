@@ -26,22 +26,24 @@ public class Consumer implements ICaDSRMIConsumer{
 		
 		ICaDSRMIConsumer c = new Consumer();
 		ConsumerSkeleton skel = ConsumerSkeleton.getInstance();
-		c.register(guiUpdater);
+		//c.register(guiUpdater);
+		
 		
 		gui = new CaDSRobotGUISwing(null, rc, rc, rc, rc);
 		gui.startGUIRefresh(1000);
-		
+		gui.addService("Fuckable");
+		gui.addService("lukas der stricher");
 		RegisterService registry = new RegisterService();
 		registry.registerAtBroker("gui");
 	}
 
 	@Override
-    public void register(ICaDSRobotGUIUpdater observer) {
-        System.out.println("New Observer");
-        observer.addService("Service 1");
-        observer.addService("Service 2");
-        observer.setChoosenService("Service 2", -1, -1, false);
-    }
+	public void register(ICaDSRobotGUIUpdater observer) {
+		System.out.println("New Observer");
+		observer.addService("Service 1");
+		observer.addService("Service 2");
+		observer.setChoosenService("Service 2", -1, -1, false);
+	}
 
     @Override
     public void update(String comboBoxText) {

@@ -148,6 +148,7 @@ public class TCPConnection {
 					String inputLine = "";
 					while ((inputLine = in.readLine()) != null) {
 						inputqueue.put(inputLine);
+						//TCPConnection.getInstance().getIntputQueueService().put(inputLine);
 						System.out.println("Client Received : "+inputLine);
 					}
 					System.out.println("Finished reading from Socket");

@@ -38,7 +38,7 @@ public class GuiUpdater extends Thread implements IIDLCaDSEV3RMIMoveGripper, IID
 		while (true) {
 			try {
 
-				unmarshall(TCPConnection.getInstance().getIntputQueueRegistry().take());
+				//unmarshall(TCPConnection.getInstance().getIntputQueueRegistry().take());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -51,6 +51,7 @@ public class GuiUpdater extends Thread implements IIDLCaDSEV3RMIMoveGripper, IID
 		
 			jaxbContext = JAXBContext.newInstance(RegisterMessage.class);
 			jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+			RobotGuiUpdater robotGuiUpdater = new RobotGuiUpdater();
 		
 		
 	}
@@ -119,6 +120,8 @@ public class GuiUpdater extends Thread implements IIDLCaDSEV3RMIMoveGripper, IID
 		RegisterMessage newRobot = (RegisterMessage) jaxbUnmarshaller.unmarshal(reader);
 		
 		System.out.println(newRobot.name);
+		
+		
 		
 		for (int i = 0; i < connectedRobots.length; i++) {
 			

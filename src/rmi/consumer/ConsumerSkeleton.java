@@ -47,7 +47,7 @@ public class ConsumerSkeleton extends Thread {
 	public void unmarshall(String XMLinput) throws Exception {
 		StringReader reader = new StringReader(XMLinput);
 
-		
+		System.out.println("skeleton");
 		FunctionParameter functionParameter = (FunctionParameter) jaxbUnmarshaller.unmarshal(reader);
 
 		switch (functionParameter.functionName) {
