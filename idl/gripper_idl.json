@@ -1,0 +1,13 @@
+{
+    "ServiceName": "IDLUseGripper",
+    "Function": "useGripper",
+    "Functions": [{
+        "name": "closeGripper",
+        "parameters": [],
+        "returnType": "int"
+    }, {
+        "name": "openGripper",
+        "parameters": [],
+        "returnType": "int"
+    }]
+}
