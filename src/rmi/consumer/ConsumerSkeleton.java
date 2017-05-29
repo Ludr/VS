@@ -13,12 +13,18 @@ import rmi.message.FunctionParameter;
 public class ConsumerSkeleton extends Thread {
 
 	private static ConsumerSkeleton instance;
+	
+	private JAXBContext jaxbContext;
+	private Unmarshaller jaxbUnmarshaller;
 
-	private ConsumerSkeleton() {
+	private ConsumerSkeleton() throws JAXBException {
+		jaxbContext = JAXBContext.newInstance(FunctionParameter.class);
+
+		jaxbUnmarshaller = jaxbContext.createUnmarshaller();
 
 	}
 
-	public static synchronized ConsumerSkeleton getInstance() {
+	public static synchronized ConsumerSkeleton getInstance() throws JAXBException {
 		if (ConsumerSkeleton.instance == null) {
 			ConsumerSkeleton.instance = new ConsumerSkeleton();
 			new Thread(instance).start();
@@ -30,7 +36,7 @@ public class ConsumerSkeleton extends Thread {
 		while (true) {
 			try {
 
-				unmarshall(TCPConnection.getInstance().getIntputQueue().take());
+				unmarshall(TCPConnection.getInstance().getIntputQueueService().take());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -38,12 +44,10 @@ public class ConsumerSkeleton extends Thread {
 		}
 	}
 
-	public static void unmarshall(String XMLinput) throws Exception {
+	public void unmarshall(String XMLinput) throws Exception {
 		StringReader reader = new StringReader(XMLinput);
 
-		JAXBContext jaxbContext = JAXBContext.newInstance(FunctionParameter.class);
-
-		Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+		
 		FunctionParameter functionParameter = (FunctionParameter) jaxbUnmarshaller.unmarshal(reader);
 
 		switch (functionParameter.functionName) {

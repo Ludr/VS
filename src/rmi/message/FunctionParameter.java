@@ -6,6 +6,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class FunctionParameter {
 	
+	@XmlElement
+	public String robotName;
 	
 	@XmlElement
 	public String functionName;

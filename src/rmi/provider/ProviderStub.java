@@ -13,20 +13,20 @@ import org.cads.ev3.rmi.generated.cadSRMIInterface.IIDLCaDSEV3RMIUltraSonic;
 
 import rmi.message.FunctionParameter;
 
-public class ProviderStub implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHorizontal,
-		IIDLCaDSEV3RMIMoveVertical, IIDLCaDSEV3RMIUltraSonic {
+public class ProviderStub implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHorizontal, IIDLCaDSEV3RMIMoveVertical, IIDLCaDSEV3RMIUltraSonic{
 
-	private JAXBContext jaxbContext;
+	private JAXBContext jaxbContext ;
 	private Marshaller jaxbMarshaller;
 
 	private static ProviderStub instance;
 
-	public static synchronized ProviderStub getInstance() {
-		if (ProviderStub.instance == null) {
+	public static synchronized ProviderStub getInstance(){
+		if (ProviderStub.instance == null){
 			ProviderStub.instance = new ProviderStub();
 		}
 		return ProviderStub.instance;
 	}
+
 
 	private ProviderStub() {
 		try {
@@ -36,6 +36,7 @@ public class ProviderStub implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMo
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 	}
 
 	@Override
@@ -93,18 +94,17 @@ public class ProviderStub implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMo
 
 	/**
 	 * marshalls a method call
-	 * 
-	 * @param percent
-	 *            - percentage of movement, null to ignore this parameter
-	 * @param returnValue
-	 *            - null to ignore returnvalue
-	 * @return returns marshalled object as xml string
+	 * @param percent - percentage of movement, null to ignore this parameter
+	 * @param returnValue - null to ignore returnvalue
+	 * @return
+	 * 		returns marshalled object as xml string
 	 * @throws InterruptedException
 	 */
-	private String marshall(Integer percent, Integer returnValue) throws InterruptedException {
+	private String marshall(Integer percent, Integer returnValue) throws InterruptedException{
 		StringWriter writer = new StringWriter();
 
 		FunctionParameter params = new FunctionParameter();
+		params.robotName = SessionControl.getInstance().robotName;
 		params.functionName = Thread.currentThread().getStackTrace()[2].getMethodName();
 		params.percent = percent;
 		params.returnValue = returnValue;
@@ -116,11 +116,14 @@ public class ProviderStub implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMo
 
 			jaxbMarshaller.marshal(params, writer);
 
+
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}
 
-		TCPConnection.getInstance().getOutputQueue().put(writer.toString());
+		TCPConnection.getInstance().getOutputQueueService().put(writer.toString());
 		return writer.toString();
+
 	}
+
 }

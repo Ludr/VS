@@ -36,7 +36,6 @@ public class ConsumerStub implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMo
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
 
 	@Override
 	public int closeGripper(int arg0) throws Exception {
@@ -105,6 +104,9 @@ public class ConsumerStub implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMo
 		StringWriter writer = new StringWriter();
 
 		FunctionParameter params = new FunctionParameter();
+		//params.robotName = ?  TODO: Holen des aktuellen Roboternamens aus der GUI!
+
+		params.robotName = "robot1";
 		params.functionName = Thread.currentThread().getStackTrace()[2].getMethodName();
 		params.percent = percent;
 		params.returnValue = returnValue;
