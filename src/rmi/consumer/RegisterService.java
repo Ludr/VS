@@ -68,7 +68,6 @@ public class RegisterService {
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}
-		System.out.println(writer.toString());
 		TCPConnection.getInstance().getOutputQueueRegistry()
 				.put(writer.toString());
 		return writer.toString();

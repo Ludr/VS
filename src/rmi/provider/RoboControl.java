@@ -141,6 +141,7 @@ public class RoboControl implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMov
 	@Override
 	public int stop(int arg0) throws Exception {
 		// TODO Auto-generated method stub
+		System.out.println("Stopping!");
 		CaDSEV3RobotHAL.getInstance().stop_h();
 		return 0;
 	}

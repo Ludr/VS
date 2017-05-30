@@ -10,7 +10,9 @@ public class Provider {
 	public static void main(String[] args) throws UnknownHostException  {
 
 		
-		SessionControl.createInstance(args[0],args[1],args[2]);
+		//SessionControl.createInstance(args[0],args[1],args[2]);
+		
+		SessionControl.createInstance("172.16.1.62","SIMULATION","robot2");
 		
 		SessionControl session = SessionControl.getInstance();
 		
@@ -29,8 +31,8 @@ public class Provider {
 
 		TCPConnection Comm = TCPConnection.getInstance();
 		
-		//RegisterService registry = new RegisterService();
-		//registry.registerAtBroker(session.robotName);
+		RegisterService registry = new RegisterService();
+		registry.registerAtBroker(session.robotName);
 	}
 
 }

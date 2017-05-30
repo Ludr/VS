@@ -1,5 +1,6 @@
 package rmi.consumer;
 
+import javax.swing.SwingUtilities;
 import javax.xml.bind.JAXBException;
 
 import org.cads.ev3.gui.ICaDSRobotGUIUpdater;
@@ -13,41 +14,62 @@ import org.cads.ev3.rmi.generated.cadSRMIInterface.IIDLCaDSEV3RMIUltraSonic;
 
 public class Consumer implements ICaDSRMIConsumer, IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHorizontal,
 IIDLCaDSEV3RMIMoveVertical, IIDLCaDSEV3RMIUltraSonic {
-	
+
 	public static CaDSRobotGUISwing gui;
-	
+
 	public static void main(String[] args) throws JAXBException {
-		
+
+		//TCPConnection.ipAdress = args[0];
+		TCPConnection.ipAdress = "172.16.1.62";
 		TCPConnection comm = TCPConnection.getInstance();
-		comm.ipAdress = args[0];
-		
+
+
 		// Start Gui and Stubs/Skeleton
-		ICaDSRobotGUIUpdater guiUpdater = new RobotGuiUpdater();
-		ConsumerStub rc = ConsumerStub.getInstance();
-		
+		ICaDSRobotGUIUpdater robotGuiUpdater = new RobotGuiUpdater();
+		ConsumerStub rc = new ConsumerStub();
+		GuiUpdater guiUpdater = GuiUpdater.getInstance();
+
 		Consumer c = new Consumer();
 		ConsumerSkeleton skel = ConsumerSkeleton.getInstance();
-		c.register(guiUpdater);
-		
+
 		gui = new CaDSRobotGUISwing(c, c, c, c, c);
-		gui.startGUIRefresh(1000);
-		
+		//gui.startGUIRefresh(1000);
+
+
+		//gui = new CaDSRobotGUISwing(c, rc, rc, rc, rc);
+		//gui.startGUIRefresh(1000);
 		RegisterService registry = new RegisterService();
 		registry.registerAtBroker("gui");
 	}
 
-	@Override
-    public void register(ICaDSRobotGUIUpdater observer) {
-        System.out.println("New Observer");
-        observer.addService("Service 1");
-        observer.addService("Service 2");
-        observer.setChoosenService("Service 2", -1, -1, false);
-    }
 
-    @Override
-    public void update(String comboBoxText) {
-        System.out.println("Combo Box updated " + comboBoxText);
-    }
+
+	@Override
+public void update(String arg0) {
+	try {
+		GuiUpdater.getInstance().setSelectedRobot(arg0);
+		Consumer.gui.setHorizontalProgressbar(GuiUpdater.getInstance().getRobotData(arg0).getHorizontalPercent());
+		Consumer.gui.setVerticalProgressbar(GuiUpdater.getInstance().getRobotData(arg0).getVerticalPercent());
+		if(GuiUpdater.getInstance().getRobotData(arg0).isGrabbed() == false){
+			Consumer.gui.setGripperOpen();
+		}else{
+			Consumer.gui.setGripperClosed();
+		}
+
+	} catch (JAXBException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+
+}
+
+
+
+@Override
+public void register(ICaDSRobotGUIUpdater arg0) {
+	System.out.println("HelloRegister");
+
+}
 
 	@Override
 	public int isUltraSonicOccupied() throws Exception {
@@ -102,8 +124,8 @@ IIDLCaDSEV3RMIMoveVertical, IIDLCaDSEV3RMIUltraSonic {
 		ConsumerStub.getInstance().openGripper();
 		return 0;
 	}
-    
-    
-    
-	
+
+
+
+
 }

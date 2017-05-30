@@ -1,9 +1,13 @@
 package rmi.consumer;
 
 import org.cads.ev3.gui.ICaDSRobotGUIUpdater;
+import org.cads.ev3.rmi.consumer.ICaDSRMIConsumer;
 
-public class RobotGuiUpdater implements ICaDSRobotGUIUpdater{
+public class RobotGuiUpdater implements ICaDSRobotGUIUpdater, ICaDSRMIConsumer{
 
+	
+	
+	
 	@Override
 	public void addService(String arg0) {
 		// TODO Auto-generated method stub
@@ -18,8 +22,7 @@ public class RobotGuiUpdater implements ICaDSRobotGUIUpdater{
 
 	@Override
 	public void setChoosenService(String arg0) {
-		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -76,4 +79,16 @@ public class RobotGuiUpdater implements ICaDSRobotGUIUpdater{
 		
 	}
 
+	@Override
+	public void register(ICaDSRobotGUIUpdater arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void update(String arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 }

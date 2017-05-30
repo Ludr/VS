@@ -19,12 +19,16 @@ public class GuiUpdater extends Thread implements IIDLCaDSEV3RMIMoveGripper, IID
 
 	private static GuiUpdater instance;
 	
-	int maxRobots = 20;
+	static int maxRobots = 20;
+	
+	private String selectedRobot;
 	
 	Unmarshaller jaxbUnmarshaller;
 	JAXBContext jaxbContext;
 	
-	public String[] connectedRobots = new String[maxRobots];
+
+	
+	public static connectedRobot[] connectedRobots = new connectedRobot[maxRobots];
 	
 	public static synchronized GuiUpdater getInstance() throws JAXBException{
 		if (GuiUpdater.instance == null) {
@@ -51,6 +55,7 @@ public class GuiUpdater extends Thread implements IIDLCaDSEV3RMIMoveGripper, IID
 		
 			jaxbContext = JAXBContext.newInstance(RegisterMessage.class);
 			jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+			RobotGuiUpdater robotGuiUpdater = new RobotGuiUpdater();
 		
 		
 	}
@@ -69,7 +74,8 @@ public class GuiUpdater extends Thread implements IIDLCaDSEV3RMIMoveGripper, IID
 
 	@Override
 	public int moveVerticalToPercent(int arg0, int arg1) throws Exception {
-		// TODO Auto-generated method stub
+		Consumer.gui.setVerticalProgressbar(arg1);
+		GuiUpdater.getInstance().getRobotData(GuiUpdater.getInstance().getSelectedRobot()).setVerticalPercent(arg1);
 		return 0;
 	}
 
@@ -81,7 +87,9 @@ public class GuiUpdater extends Thread implements IIDLCaDSEV3RMIMoveGripper, IID
 
 	@Override
 	public int moveHorizontalToPercent(int arg0, int arg1) throws Exception {
-		// TODO Auto-generated method stub
+		Consumer.gui.setHorizontalProgressbar(arg1);
+		GuiUpdater.getInstance().getRobotData(GuiUpdater.getInstance().getSelectedRobot()).setHorizontalPercent(arg1);
+		
 		return 0;
 	}
 
@@ -95,6 +103,7 @@ public class GuiUpdater extends Thread implements IIDLCaDSEV3RMIMoveGripper, IID
 	public int closeGripper(int arg0) throws Exception {
 		// TODO Auto-generated method stub
 		Consumer.gui.setGripperClosed();
+		GuiUpdater.getInstance().getRobotData(GuiUpdater.getInstance().getSelectedRobot()).setGrabbed(true);
 		return 0;
 	}
 
@@ -108,11 +117,13 @@ public class GuiUpdater extends Thread implements IIDLCaDSEV3RMIMoveGripper, IID
 	public int openGripper(int arg0) throws Exception {
 		// TODO Auto-generated method stub
 		Consumer.gui.setGripperOpen();
+		GuiUpdater.getInstance().getRobotData(GuiUpdater.getInstance().getSelectedRobot()).setGrabbed(false);
 		return 0;
 	}
 	
 	
-	private void unmarshall(String XMLinput) throws JAXBException{
+	public void unmarshall(String XMLinput) throws JAXBException{
+		
 		
 		StringReader reader = new StringReader(XMLinput);
 		
@@ -120,17 +131,48 @@ public class GuiUpdater extends Thread implements IIDLCaDSEV3RMIMoveGripper, IID
 		
 		System.out.println(newRobot.name);
 		
+		
+		//Consumer.gui.setChoosenService(newRobot.name);
+		
+		
 		for (int i = 0; i < connectedRobots.length; i++) {
 			
 			if(connectedRobots[i] == null){
-				connectedRobots[i] = newRobot.name;
+				connectedRobots[i] = new connectedRobot(newRobot.name, 0, 0, false);
+				System.out.println("Neuer Roboter! "+connectedRobots[i].getRobotName());
+				break;
+		
 			}
-		else if(connectedRobots[i] == newRobot.name){
+		else if(connectedRobots[i].getRobotName() == newRobot.name){
 				System.out.println("Duplicate Robot received");
+				break;
 			}
 				
 		}
 		
+		Consumer.gui.addService(newRobot.name);
+		Consumer.gui.setChoosenService(newRobot.name);
+		
+	}
+	
+	public synchronized connectedRobot getRobotData(String selectedRobot){
+		for (int i = 0; i < connectedRobots.length; i++) {
+			
+			if(connectedRobots[i].getRobotName().equals(selectedRobot)){
+				System.out.println("Return Data: "+connectedRobots[i].getRobotName());
+				return connectedRobots[i];
+			}
+		}
+		return null;
+	}
+	
+
+	public synchronized String getSelectedRobot() {
+		return selectedRobot;
+	}
+
+	public synchronized void setSelectedRobot(String selectedRobot) {
+		this.selectedRobot = selectedRobot;
 	}
 }
 
