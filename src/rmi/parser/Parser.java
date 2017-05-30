@@ -15,14 +15,17 @@ import java.util.Map;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 public class Parser {
 
 	public static void main(String[] args) throws Exception {
 
-		String objectName = "ConsumerStub";
+		generateStub("ConsumerStub");
+		generateStub("ProviderStub");
 
+	}
+
+	private static void generateStub(String objectName) throws FileNotFoundException, IOException, Exception {
 		// Read Plain Text Class
 		String fileName = "idl/plain_texts/stub_class.txt";
 		String plainTextClass = readEntirefile(fileName);
@@ -41,7 +44,6 @@ public class Parser {
 				methodesBuffer.toString());
 
 		writeToFile(objectName, classString);
-
 	}
 
 	private static String generateSingleton(String objectName) throws Exception {
