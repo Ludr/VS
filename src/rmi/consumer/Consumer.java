@@ -26,7 +26,6 @@ IIDLCaDSEV3RMIMoveVertical, IIDLCaDSEV3RMIUltraSonic {
 
 		// Start Gui and Stubs/Skeleton
 		ICaDSRobotGUIUpdater robotGuiUpdater = new RobotGuiUpdater();
-		ConsumerStub rc = new ConsumerStub();
 		GuiUpdater guiUpdater = GuiUpdater.getInstance();
 
 		Consumer c = new Consumer();

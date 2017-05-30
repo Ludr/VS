@@ -64,7 +64,7 @@ public class ConsumerStub /* implemnts IDL interfaces */{
 	 * @throws InterruptedException
 	 * @throws JAXBException
 	 */
-	private String marshall(Integer percent, Integer returnValue) throws InterruptedException {
+	private String marshall(Integer percent, Integer returnValue) throws InterruptedException, Exception {
 		StringWriter writer = new StringWriter();
 
 		FunctionParameter params = new FunctionParameter();
