@@ -2,11 +2,11 @@
     "ServiceName": "IDLMoveHorizontal",
     "Function": "moveHorizontal",
     "Functions": [{
-        "name": "moveVerticalToPercent",
+        "name": "moveHorizontalToPercent",
         "parameters": [{
             "position": 1,
             "type": "int",
-            "name": "integer"
+            "name": "percent"
         }],
         "returnType": "int"
     }]

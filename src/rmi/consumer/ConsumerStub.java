@@ -6,15 +6,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-import org.cads.ev3.rmi.generated.cadSRMIInterface.IIDLCaDSEV3RMIMoveGripper;
-import org.cads.ev3.rmi.generated.cadSRMIInterface.IIDLCaDSEV3RMIMoveHorizontal;
-import org.cads.ev3.rmi.generated.cadSRMIInterface.IIDLCaDSEV3RMIMoveVertical;
-import org.cads.ev3.rmi.generated.cadSRMIInterface.IIDLCaDSEV3RMIUltraSonic;
-
 import rmi.message.FunctionParameter;
 
-public class ConsumerStub implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMoveHorizontal,
-		IIDLCaDSEV3RMIMoveVertical, IIDLCaDSEV3RMIUltraSonic {
+public class ConsumerStub /* implemnts IDL interfaces */{
 
 	private JAXBContext jaxbContext;
 	private Marshaller jaxbMarshaller;
@@ -36,57 +30,26 @@ public class ConsumerStub implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMo
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
 
-	@Override
-	public int closeGripper(int arg0) throws Exception {
+
+	public int closeGripper() throws Exception{
 		marshall(null, null);
 		return 0;
 	}
 
-	@Override
-	public int isGripperClosed() throws Exception {
-		return 0;
-	}
-
-	@Override
-	public int openGripper(int arg0) throws Exception {
+	public int openGripper() throws Exception {
 		marshall(null, null);
 		return 0;
 	}
 
-	@Override
-	public int isUltraSonicOccupied() throws Exception {
-		marshall(null, null);
+	public int moveVerticalToPercent(int percent) throws Exception {
+		marshall(percent, null);
 		return 0;
 	}
 
-	@Override
-	public int getCurrentVerticalPercent() throws Exception {
-		marshall(null, null);
-		return 0;
-	}
-
-	@Override
-	public int moveVerticalToPercent(int arg0, int arg1) throws Exception {
-		marshall(arg1, null);
-		return 0;
-	}
-
-	@Override
-	public int getCurrentHorizontalPercent() throws Exception {
-		marshall(null, null);
-		return 0;
-	}
-
-	@Override
-	public int moveHorizontalToPercent(int arg0, int arg1) throws Exception {
-		marshall(arg1, null);
-		return 0;
-	}
-
-	@Override
-	public int stop(int arg0) throws Exception {
-		marshall(null, null);
+	public int moveHorizontalToPercent(int percent) throws Exception {
+		marshall(percent, null);
 		return 0;
 	}
 
@@ -122,7 +85,7 @@ public class ConsumerStub implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMo
 			e.printStackTrace();
 		}
 
-		TCPConnection.getInstance().getOutputQueue().put(writer.toString());
+		TCPConnection.getInstance().getOutputQueueService().put(writer.toString());
 		return writer.toString();
 	}
 }

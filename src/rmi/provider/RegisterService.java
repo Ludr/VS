@@ -14,7 +14,7 @@ public class RegisterService {
 
 	private JAXBContext jaxbContext ;
 	private Marshaller jaxbMarshaller;
-	
+
 	public RegisterService(){
 		try {
 			jaxbContext = JAXBContext.newInstance(FunctionParameter.class);
@@ -24,8 +24,8 @@ public class RegisterService {
 			e.printStackTrace();
 		}
 	}
-	
-	
+
+
 	public void registerAtBroker(String robotName){
 		try {
 			marshall(robotName,"gripper","horizontal","vertical",8889);
@@ -34,11 +34,11 @@ public class RegisterService {
 			e.printStackTrace();
 		}
 	}
-	
-	
-	
-	
-	
+
+
+
+
+
 	/**
 	 * marshalls a method call
 	 * @param percent - percentage of movement, null to ignore this parameter
@@ -48,29 +48,29 @@ public class RegisterService {
 	 * @throws InterruptedException
 	 */
 	private String marshall(String robotName, String gripperService, String horizontalService, String verticalService, int portNr) throws InterruptedException{
-		
+
 		StringWriter writer = new StringWriter();
-		
+
 		RegisterMessage registerMessage = new RegisterMessage(robotName,gripperService,horizontalService,verticalService,portNr);
-		
-		
-		
-		
+
+
+
+
 		try {
 
 			// output pretty printed
 			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
 
 			jaxbMarshaller.marshal(registerMessage, writer);
-			
-			
+
+
 		} catch (JAXBException e) {
 			e.printStackTrace();
 		}
-		
+
 		TCPConnection.getInstance().getOutputQueueRegistry().put(writer.toString());
 		return writer.toString();
-		
+
 	}
 
 

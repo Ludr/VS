@@ -1,10 +1,10 @@
 private static %s instance;
 
 public static synchronized %s getInstance() {
-  if (%s.instance == null) {
-    %s.instance = new %s();
+  if (instance == null) {
+    instance = new %s();
   }
-  return %s.instance;
+  return instance;
 }
 
 private %s() {

@@ -6,7 +6,7 @@
         "parameters": [{
             "position": 1,
             "type": "int",
-            "name": "integer"
+            "name": "percent"
         }],
         "returnType": "int"
     }]

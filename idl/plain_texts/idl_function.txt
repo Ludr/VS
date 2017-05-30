@@ -1,0 +1,4 @@
+public %s %s(%s) {
+    marshall(%s, null);
+    %s
+}
