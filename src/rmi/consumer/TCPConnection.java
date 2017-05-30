@@ -147,7 +147,14 @@ public class TCPConnection {
 							new InputStreamReader(socket.getInputStream()));
 					String inputLine = "";
 					while ((inputLine = in.readLine()) != null) {
-						inputqueue.put(inputLine);
+						if(inputLine.contains("functionParameter")){
+							
+							TCPConnection.getInstance().getIntputQueueService().put(inputLine);
+						}else{
+							
+							TCPConnection.getInstance().getIntputQueueRegistry().put(inputLine);
+						}
+						
 						//TCPConnection.getInstance().getIntputQueueService().put(inputLine);
 						System.out.println("Client Received : "+inputLine);
 					}

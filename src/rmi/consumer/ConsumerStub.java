@@ -85,14 +85,15 @@ public class ConsumerStub implements IIDLCaDSEV3RMIMoveGripper, IIDLCaDSEV3RMIMo
 	 * @return
 	 * 		returns marshalled object as xml string
 	 * @throws InterruptedException
+	 * @throws JAXBException 
 	 */
-	private String marshall(Integer percent, Integer returnValue) throws InterruptedException{
+	private String marshall(Integer percent, Integer returnValue) throws InterruptedException, JAXBException{
 		StringWriter writer = new StringWriter();
 		
 		FunctionParameter params = new FunctionParameter();
 		//params.robotName = ?  TODO: Holen des aktuellen Roboternamens aus der GUI!
 		
-		params.robotName = "robot1";
+		params.robotName = GuiUpdater.getInstance().getSelectedRobot();
 		params.functionName = Thread.currentThread().getStackTrace()[2].getMethodName();
 		params.percent = percent;
 		params.returnValue = returnValue;

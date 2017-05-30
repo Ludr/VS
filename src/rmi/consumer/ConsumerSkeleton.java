@@ -13,7 +13,7 @@ import rmi.message.FunctionParameter;
 public class ConsumerSkeleton extends Thread {
 
 	private static ConsumerSkeleton instance;
-	
+
 	private JAXBContext jaxbContext;
 	private Unmarshaller jaxbUnmarshaller;
 
@@ -24,7 +24,8 @@ public class ConsumerSkeleton extends Thread {
 
 	}
 
-	public static synchronized ConsumerSkeleton getInstance() throws JAXBException {
+	public static synchronized ConsumerSkeleton getInstance()
+			throws JAXBException {
 		if (ConsumerSkeleton.instance == null) {
 			ConsumerSkeleton.instance = new ConsumerSkeleton();
 			new Thread(instance).start();
@@ -36,7 +37,8 @@ public class ConsumerSkeleton extends Thread {
 		while (true) {
 			try {
 
-				unmarshall(TCPConnection.getInstance().getIntputQueueService().take());
+				unmarshall(TCPConnection.getInstance().getIntputQueueService()
+						.take());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -48,7 +50,8 @@ public class ConsumerSkeleton extends Thread {
 		StringReader reader = new StringReader(XMLinput);
 
 		System.out.println("skeleton");
-		FunctionParameter functionParameter = (FunctionParameter) jaxbUnmarshaller.unmarshal(reader);
+		FunctionParameter functionParameter = (FunctionParameter) jaxbUnmarshaller
+				.unmarshal(reader);
 
 		switch (functionParameter.functionName) {
 		case "openGripper":
@@ -59,9 +62,14 @@ public class ConsumerSkeleton extends Thread {
 			GuiUpdater.getInstance().closeGripper(0);
 			break;
 
+		case "moveHorizontalToPercent":
+			GuiUpdater.getInstance().moveHorizontalToPercent(0,functionParameter.percent);
+			break;
+		case "moveVerticalToPercent":
+			GuiUpdater.getInstance().moveVerticalToPercent(0,functionParameter.percent);
+			break;
 		}
 
 	}
 
 }
-

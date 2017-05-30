@@ -1,7 +1,6 @@
 package rmi.consumer;
 
-import java.net.InetAddress;
-
+import javax.swing.SwingUtilities;
 import javax.xml.bind.JAXBException;
 
 import org.cads.ev3.gui.ICaDSRobotGUIUpdater;
@@ -21,34 +20,52 @@ public class Consumer implements ICaDSRMIConsumer{
 		
 		
 		// Start Gui and Stubs/Skeleton
-		ICaDSRobotGUIUpdater guiUpdater = new RobotGuiUpdater();
+		ICaDSRobotGUIUpdater robotGuiUpdater = new RobotGuiUpdater();
 		ConsumerStub rc = new ConsumerStub();
+		GuiUpdater guiUpdater = GuiUpdater.getInstance();
 		
-		ICaDSRMIConsumer c = new Consumer();
+		Consumer c = new Consumer();
 		ConsumerSkeleton skel = ConsumerSkeleton.getInstance();
+		
 		//c.register(guiUpdater);
 		
-		
-		gui = new CaDSRobotGUISwing(null, rc, rc, rc, rc);
-		gui.startGUIRefresh(1000);
-		gui.addService("Fuckable");
-		gui.addService("lukas der stricher");
+
+		gui = new CaDSRobotGUISwing(c, rc, rc, rc, rc);
+		//gui.startGUIRefresh(1000);
 		RegisterService registry = new RegisterService();
 		registry.registerAtBroker("gui");
 	}
 
+	
+
 	@Override
-	public void register(ICaDSRobotGUIUpdater observer) {
-		System.out.println("New Observer");
-		observer.addService("Service 1");
-		observer.addService("Service 2");
-		observer.setChoosenService("Service 2", -1, -1, false);
+	public void update(String arg0) {
+		try {
+			GuiUpdater.getInstance().setSelectedRobot(arg0);
+			Consumer.gui.setHorizontalProgressbar(GuiUpdater.getInstance().getRobotData(arg0).getHorizontalPercent());
+			Consumer.gui.setVerticalProgressbar(GuiUpdater.getInstance().getRobotData(arg0).getVerticalPercent());
+			if(GuiUpdater.getInstance().getRobotData(arg0).isGrabbed() == false){
+				Consumer.gui.setGripperOpen();
+			}else{
+				Consumer.gui.setGripperClosed();
+			}
+			
+		} catch (JAXBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
-    @Override
-    public void update(String comboBoxText) {
-        System.out.println("Combo Box updated " + comboBoxText);
-    }
+
+
+	@Override
+	public void register(ICaDSRobotGUIUpdater arg0) {
+		System.out.println("HelloRegister");
+		
+	}
+
+    
     
     
     

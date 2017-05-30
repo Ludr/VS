@@ -95,7 +95,6 @@ public class WorkerRunnable implements Runnable {
 		System.out.println(message.name);
 
 		if (message.name.equals("gui")) {
-
 			for (int i = 0; i < offeredServices.length; i++) {
 				if (offeredServices[i] == null) {
 					offeredServices[i] = new Service(message.name, null,
@@ -105,10 +104,11 @@ public class WorkerRunnable implements Runnable {
 			}
 			System.out.println(offeredServices[0].getRobotName());
 			//System.out.println(offeredServices[1].getRobotName());
-			handleServiceDiscovery(sc);
+			handleServiceDiscoveryAll(sc);
 
 		} else {
 
+			String newRobotName = message.name;
 			for (int i = 0; i < offeredServices.length; i++) {
 
 				if(offeredServices[i] == null){
@@ -161,14 +161,42 @@ public class WorkerRunnable implements Runnable {
 
 			}
 			for (int j = 0; j < offeredServices.length; j++) {
-				
 				if(offeredServices[j].getRobotName().equals("gui")){
-					handleServiceDiscovery(offeredServices[j].getSocket());
+					handleServiceDiscoveryNewRobot(offeredServices[j].getSocket(),newRobotName);
 					break;
 				}
 			}
 		}
 
+	}
+
+	private void handleServiceDiscoveryNewRobot(Socket socket,String newRobot) throws IOException {
+		
+		PrintWriter out = null;
+
+		StringWriter writer;
+		
+		RegisterMessage serviceDiscoveryMessage = new RegisterMessage();
+		serviceDiscoveryMessage.name =newRobot;
+		serviceDiscoveryMessage.service1 = null;
+		serviceDiscoveryMessage.service2 = null;
+		serviceDiscoveryMessage.service3 = null;
+		serviceDiscoveryMessage.portNr = 0;
+
+		writer = marshallServiceDiscovery(serviceDiscoveryMessage);
+
+		String message = writer.toString();
+
+		System.out.println("Nachricht an Client:" + message);
+
+		System.out.println(message.length());
+
+		
+
+		out = new PrintWriter(socket.getOutputStream(), true);
+		
+		out.println(message);
+		
 	}
 
 	/**
@@ -178,7 +206,7 @@ public class WorkerRunnable implements Runnable {
 	 * @param socket
 	 * @throws IOException
 	 */
-	private void handleServiceDiscovery(Socket socket) throws IOException {
+	private void handleServiceDiscoveryAll(Socket socket) throws IOException {
 		System.out.println("handleServiceDiscovery");
 		
 		PrintWriter out = null;
@@ -190,7 +218,12 @@ public class WorkerRunnable implements Runnable {
 		for (int i = 0; i < offeredServices.length; i++) {
 
 			if (offeredServices[i] != null) {
+				if (offeredServices[i].getRobotName().equals("gui")) {
+					
+				}else{
 				set.add(offeredServices[i].getRobotName());
+				}
+				
 			} else {
 				break;
 			}
@@ -339,7 +372,6 @@ public class WorkerRunnable implements Runnable {
 			throws Exception {
 
 		System.out.println("unmarshallRegisterMessage");
-		System.out.println(XMLinput);
 
 		StringReader reader = new StringReader(XMLinput);
 
