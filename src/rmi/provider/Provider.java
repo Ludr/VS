@@ -12,7 +12,7 @@ public class Provider {
 		
 		//SessionControl.createInstance(args[0],args[1],args[2]);
 		
-		SessionControl.createInstance("locahost","SIMULATION","robot3");
+		SessionControl.createInstance("172.16.1.62","SIMULATION","robot2");
 		
 		SessionControl session = SessionControl.getInstance();
 		

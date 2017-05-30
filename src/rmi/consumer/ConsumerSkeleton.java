@@ -55,18 +55,34 @@ public class ConsumerSkeleton extends Thread {
 
 		switch (functionParameter.functionName) {
 		case "openGripper":
+			if(functionParameter.robotName.equals(GuiUpdater.getInstance().getSelectedRobot())){
 			GuiUpdater.getInstance().openGripper(0);
+			}else{
+				GuiUpdater.getInstance().getRobotData(functionParameter.robotName).setGrabbed(false);
+			}
 			break;
 
 		case "closeGripper":
+			if(functionParameter.robotName.equals(GuiUpdater.getInstance().getSelectedRobot())){
 			GuiUpdater.getInstance().closeGripper(0);
+			}else{
+				GuiUpdater.getInstance().getRobotData(functionParameter.robotName).setGrabbed(true);
+			}
 			break;
 
 		case "moveHorizontalToPercent":
+			if(functionParameter.robotName.equals(GuiUpdater.getInstance().getSelectedRobot())){
 			GuiUpdater.getInstance().moveHorizontalToPercent(0,functionParameter.percent);
+			}else{
+				GuiUpdater.getInstance().getRobotData(functionParameter.robotName).setHorizontalPercent(functionParameter.percent);
+			}
 			break;
 		case "moveVerticalToPercent":
+			if(functionParameter.robotName.equals(GuiUpdater.getInstance().getSelectedRobot())){
 			GuiUpdater.getInstance().moveVerticalToPercent(0,functionParameter.percent);
+			}else{
+			GuiUpdater.getInstance().getRobotData(functionParameter.robotName).setVerticalPercent(functionParameter.percent);
+			}
 			break;
 		}
 

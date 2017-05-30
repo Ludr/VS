@@ -79,13 +79,13 @@ public class TCPConnection {
 		intputQueueService = new LinkedBlockingDeque<>();
 
 		try {
-			serviceSocket = new Socket("localhost", 8888);
+			serviceSocket = new Socket(SessionControl.getInstance().ipAdress, 8888);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
 		try {
-			registrySocket = new Socket("localhost", 8889);
+			registrySocket = new Socket(SessionControl.getInstance().ipAdress, 8889);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

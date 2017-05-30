@@ -15,7 +15,7 @@ public class Consumer implements ICaDSRMIConsumer{
 	public static void main(String[] args) throws JAXBException {
 		
 		//TCPConnection.ipAdress = args[0];
-		TCPConnection.ipAdress = "localhost";
+		TCPConnection.ipAdress = "172.16.1.62";
 		TCPConnection comm = TCPConnection.getInstance();
 		
 		

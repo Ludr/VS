@@ -85,7 +85,7 @@ public class WorkerRunnable implements Runnable {
 
 	
 	
-	private void processInputRegistry(Socket sc,String inputline) throws Exception {
+	private synchronized void processInputRegistry(Socket sc,String inputline) throws Exception {
 		System.out.println("processInputRegisry");
 
 		
@@ -170,7 +170,7 @@ public class WorkerRunnable implements Runnable {
 
 	}
 
-	private void handleServiceDiscoveryNewRobot(Socket socket,String newRobot) throws IOException {
+	private synchronized void handleServiceDiscoveryNewRobot(Socket socket,String newRobot) throws IOException {
 		
 		PrintWriter out = null;
 
@@ -200,13 +200,13 @@ public class WorkerRunnable implements Runnable {
 	}
 
 	/**
-	 * Alle aktuell registrierten clients(Roboter) werden an den über socket
+	 * Alle aktuell registrierten clients(Roboter) werden an den ï¿½ber socket
 	 * verbundenen client gesendet
 	 * 
 	 * @param socket
 	 * @throws IOException
 	 */
-	private void handleServiceDiscoveryAll(Socket socket) throws IOException {
+	private synchronized void handleServiceDiscoveryAll(Socket socket) throws IOException {
 		System.out.println("handleServiceDiscovery");
 		
 		PrintWriter out = null;
@@ -274,7 +274,7 @@ public class WorkerRunnable implements Runnable {
 	 * @param sc
 	 * @throws Exception
 	 */
-	private void processInputService(Socket sc,String inputline) throws Exception {
+	private synchronized void  processInputService(Socket sc,String inputline) throws Exception {
 		System.out.println("processInputService");
 		
 
@@ -313,7 +313,7 @@ public class WorkerRunnable implements Runnable {
 	 * @throws InterruptedException
 	 * @throws IOException
 	 */
-	private void processOutputService(Socket socket,
+	private synchronized void processOutputService(Socket socket,
 			FunctionParameter functionParameter) throws InterruptedException,
 			IOException {
 
@@ -328,7 +328,7 @@ public class WorkerRunnable implements Runnable {
 
 	}
 
-	private StringWriter marshallMethodCall(FunctionParameter functionParameter)
+	private synchronized StringWriter marshallMethodCall(FunctionParameter functionParameter)
 			throws InterruptedException {
 
 		StringWriter writer = new StringWriter();
@@ -348,7 +348,7 @@ public class WorkerRunnable implements Runnable {
 
 	}
 
-	private StringWriter marshallServiceDiscovery(
+	private synchronized StringWriter marshallServiceDiscovery(
 			RegisterMessage serviceDiscoveryMessage) {
 
 		StringWriter writer = new StringWriter();
@@ -368,7 +368,7 @@ public class WorkerRunnable implements Runnable {
 
 	}
 
-	public static RegisterMessage unmarshallRegisterMessage(String XMLinput)
+	public static synchronized RegisterMessage unmarshallRegisterMessage(String XMLinput)
 			throws Exception {
 
 		System.out.println("unmarshallRegisterMessage");
@@ -382,7 +382,7 @@ public class WorkerRunnable implements Runnable {
 
 	}
 
-	public static FunctionParameter unmarshallServiceMessage(String XMLinput)
+	public static synchronized FunctionParameter unmarshallServiceMessage(String XMLinput)
 			throws Exception {
 
 		StringReader reader = new StringReader(XMLinput);
