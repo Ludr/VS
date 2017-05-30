@@ -15,8 +15,6 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 public class TCPConnection {
 
-	
-	
 	private static TCPConnection instance;
 
 	private Socket serviceSocket;
@@ -105,7 +103,7 @@ public class TCPConnection {
 
 		public Sender(Socket socket, BlockingQueue<String> outputqueue) {
 			this.outqueue = outputqueue;
-			
+
 			localSocket = socket;
 			try {
 				out = new PrintWriter(socket.getOutputStream(), true);
@@ -119,7 +117,7 @@ public class TCPConnection {
 			while (!isInterrupted()) {
 				try {
 					str = outqueue.take();
-					System.out.println("Provider sends : "+str);
+					System.out.println("Provider sends : " + str);
 					out.println(str);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
@@ -143,12 +141,11 @@ public class TCPConnection {
 			while (!isInterrupted()) {
 				try {
 					System.out.println("Receiver Reading from Socket");
-					BufferedReader in = new BufferedReader(
-							new InputStreamReader(socket.getInputStream()));
+					BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 					String inputLine = "";
 					while ((inputLine = in.readLine()) != null) {
 						TCPConnection.getInstance().intputQueueService.put(inputLine);
-						System.out.println("Provider receives : "+inputLine);
+						System.out.println("Provider receives : " + inputLine);
 					}
 					System.out.println("Finished reading from Socket");
 				} catch (IOException e) {

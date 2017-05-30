@@ -107,7 +107,7 @@ public class ProviderStub implements IIDLCaDSEV3RMIMoveGripper,
 	 * @return returns marshalled object as xml string
 	 * @throws InterruptedException
 	 */
-	private String marshall(Integer percent, Integer returnValue)
+	private synchronized String marshall(Integer percent, Integer returnValue)
 			throws InterruptedException {
 
 		StringWriter writer = new StringWriter();
@@ -119,7 +119,7 @@ public class ProviderStub implements IIDLCaDSEV3RMIMoveGripper,
 		params.returnValue = returnValue;
 
 		try {
-			switch (params.functionName) {
+			switch ("moveHorizontalToPercent") {
 
 		case "moveHorizontalToPercent":
 			jaxbMarshallerHorizontal.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);

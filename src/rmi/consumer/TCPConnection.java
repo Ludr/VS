@@ -1,6 +1,5 @@
 package rmi.consumer;
 
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,9 +9,8 @@ import java.nio.charset.Charset;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
-
 public class TCPConnection {
-	
+
 	public static String ipAdress;
 
 	private static TCPConnection instance;
@@ -103,7 +101,7 @@ public class TCPConnection {
 
 		public Sender(Socket socket, BlockingQueue<String> outputqueue) {
 			this.outqueue = outputqueue;
-			
+
 			localSocket = socket;
 			try {
 				out = new PrintWriter(socket.getOutputStream(), true);
@@ -117,7 +115,7 @@ public class TCPConnection {
 			while (!isInterrupted()) {
 				try {
 					str = outqueue.take();
-					System.out.println("Client sends : "+str);
+					System.out.println("Client sends : " + str);
 					out.println(str);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
@@ -140,23 +138,21 @@ public class TCPConnection {
 		public void run() {
 			while (!isInterrupted()) {
 				try {
-					System.out.println("Receiver Reading from Socket on port "+socket.getPort());
-					
-					
-					BufferedReader in = new BufferedReader(
-							new InputStreamReader(socket.getInputStream()));
+					System.out.println("Receiver Reading from Socket on port " + socket.getPort());
+
+					BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 					String inputLine = "";
 					while ((inputLine = in.readLine()) != null) {
-						if(inputLine.contains("functionParameter")){
-							
+						if (inputLine.contains("functionParameter")) {
+
 							TCPConnection.getInstance().getIntputQueueService().put(inputLine);
-						}else{
-							
+						} else {
+
 							TCPConnection.getInstance().getIntputQueueRegistry().put(inputLine);
 						}
-						
-						//TCPConnection.getInstance().getIntputQueueService().put(inputLine);
-						System.out.println("Client Received : "+inputLine);
+
+						// TCPConnection.getInstance().getIntputQueueService().put(inputLine);
+						System.out.println("Client Received : " + inputLine);
 					}
 					System.out.println("Finished reading from Socket");
 				} catch (IOException e) {

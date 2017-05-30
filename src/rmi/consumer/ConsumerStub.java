@@ -34,22 +34,22 @@ public class ConsumerStub /* implemnts IDL interfaces */{
 
 
 	public int closeGripper() throws Exception{
-		marshall(null, null);
+		marshall(null, 0);
 		return 0;
 	}
 
 	public int openGripper() throws Exception {
-		marshall(null, null);
+		marshall(null, 0);
 		return 0;
 	}
 
 	public int moveVerticalToPercent(int percent) throws Exception {
-		marshall(percent, null);
+		marshall(percent, 0);
 		return 0;
 	}
 
 	public int moveHorizontalToPercent(int percent) throws Exception {
-		marshall(percent, null);
+		marshall(percent, 0);
 		return 0;
 	}
 

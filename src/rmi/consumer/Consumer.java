@@ -20,7 +20,7 @@ IIDLCaDSEV3RMIMoveVertical, IIDLCaDSEV3RMIUltraSonic {
 	public static void main(String[] args) throws JAXBException {
 
 		//TCPConnection.ipAdress = args[0];
-		TCPConnection.ipAdress = "172.16.1.62";
+		TCPConnection.ipAdress = "localhost";
 		TCPConnection comm = TCPConnection.getInstance();
 
 
