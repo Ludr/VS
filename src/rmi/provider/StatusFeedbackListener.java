@@ -20,17 +20,16 @@ public class StatusFeedbackListener implements ICaDSEV3RobotStatusListener, ICaD
 		// TODO Auto-generated method stub
 		RoboControl rc = RoboControl.getInstance();
 		String state = arg0.get("state").toString();
-//		 System.out.println(arg0);
 
 		try {
 			if (state.equals("gripper")) {
 				String value = arg0.get("value").toString();
 				if (value.equals("open") && isGripperClosed) {
 					isGripperClosed = false;
-					ProviderStub.getInstance().openGripper(0);
+					rc.providerStub.openGripper();
 				} else if( value.equals("closed") && !isGripperClosed) {
 					isGripperClosed = true;
-					ProviderStub.getInstance().closeGripper(0);
+					rc.providerStub.closeGripper();
 				}
 			} else if (state.equals("horizontal")) {
 				int newValue = Integer.valueOf(arg0.get("percent").toString());
@@ -38,20 +37,18 @@ public class StatusFeedbackListener implements ICaDSEV3RobotStatusListener, ICaD
 				if (rc.getCurrentHorizontalPercent() < newValue) {
 					
 					rc.setCurrentHorizontalPercent(newValue);
-					//System.out.println("Target: "+rc.getTargetHorizontalPercent()+" current: "+rc.getCurrentHorizontalPercent());
 					if (rc.getTargetHorizontalPercent() <= rc.getCurrentHorizontalPercent()) {
 						CaDSEV3RobotHAL.getInstance().stop_h();
 					}
-					ProviderStub.getInstance().moveHorizontalToPercent(0, newValue);
+					rc.providerStub.moveHorizontalToPercent(newValue);
 				} else if (rc.getCurrentHorizontalPercent() > newValue) {
 					
 					rc.setCurrentHorizontalPercent(newValue);
-					//System.out.println("Target: "+rc.getTargetHorizontalPercent()+" current: "+rc.getCurrentHorizontalPercent());
 					
 					if (rc.getTargetHorizontalPercent() >= rc.getCurrentHorizontalPercent()) {
 						CaDSEV3RobotHAL.getInstance().stop_h();
 					}
-					ProviderStub.getInstance().moveHorizontalToPercent(0, newValue);
+					rc.providerStub.moveHorizontalToPercent(newValue);
 				}
 			} else if (state.equals("vertical")) {
 				int newValue = Integer.valueOf(arg0.get("percent").toString());
@@ -60,13 +57,13 @@ public class StatusFeedbackListener implements ICaDSEV3RobotStatusListener, ICaD
 					if (rc.getTargetVerticalPercent() <= rc.getCurrentVerticalPercent()) {
 						CaDSEV3RobotHAL.getInstance().stop_v();
 					}
-					ProviderStub.getInstance().moveVerticalToPercent(0, newValue);
+					rc.providerStub.moveVerticalToPercent(newValue);
 				} else if (rc.getCurrentVerticalPercent() > newValue) {
 					rc.setCurrentVerticalPercent(newValue);
 					if (rc.getTargetVerticalPercent() >= rc.getCurrentVerticalPercent()) {
 						CaDSEV3RobotHAL.getInstance().stop_v();
 					}
-					ProviderStub.getInstance().moveVerticalToPercent(0, newValue);
+					rc.providerStub.moveVerticalToPercent(newValue);
 				}
 			}
 		} catch (Exception e) {

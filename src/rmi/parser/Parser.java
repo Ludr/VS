@@ -20,14 +20,39 @@ public class Parser {
 
 	public static void main(String[] args) throws Exception {
 
-		generateStub("ConsumerStub");
-		generateStub("ProviderStub");
+		generateStub("ConsumerStub", "rmi.consumer", "GuiUpdater", "0");
+		generateStub("ProviderStub", "rmi.provider", "SessionControl", "1");
+		
+		generateSkeleton("GuiUpdater", "rmi.consumer", "ConsumerSkeleton");
+		generateSkeleton("RoboControl", "rmi.provider", "ProviderSkeleton");
 
 	}
+	
+	private static void generateSkeleton(String callerObject, String callerPackage, String objectName) throws Exception {
+		String pathName = "rmi.generated";
+		
+		String fileName = "idl/plain_texts/skeleton_class.txt";
+		String plainTextClass = readEntirefile(fileName);
+		
+		String singletonPattern = generateSkeletonSingleton(objectName);
+		
+		System.out.println("Now generating : " + objectName + ".java");
+		String classString = String.format(plainTextClass, pathName, callerPackage, objectName, singletonPattern, "TCPConnection", callerObject, callerObject);
 
-	private static void generateStub(String objectName) throws FileNotFoundException, IOException, Exception {
+		writeToFile(objectName, classString);
+	}
+	
+	private static String generateSkeletonSingleton(String objectName) throws FileNotFoundException, IOException{
+		String fileName = "idl/plain_texts/skeleton_singleton.txt";
+		String singletonString = readEntirefile(fileName);
+
+		return String.format(singletonString, objectName, objectName, objectName, objectName);
+	}
+
+	private static void generateStub(String objectName, String callerPackage, String robotReference, String messageType) throws FileNotFoundException, IOException, Exception {
 		// Read Plain Text Class
 		String fileName = "idl/plain_texts/stub_class.txt";
+		String pathName = "rmi.generated";
 		String plainTextClass = readEntirefile(fileName);
 
 		StringBuffer methodesBuffer = new StringBuffer();
@@ -37,11 +62,9 @@ public class Parser {
 
 		String singletonPattern = generateSingleton(objectName);
 
-		String pathName = "rmi.generated";
-
 		System.out.println("Now generating : " + objectName + ".java");
-		String classString = String.format(plainTextClass, pathName, objectName, singletonPattern,
-				methodesBuffer.toString());
+		String classString = String.format(plainTextClass, pathName, callerPackage, objectName, singletonPattern,
+				methodesBuffer.toString(), robotReference, messageType);
 
 		writeToFile(objectName, classString);
 	}

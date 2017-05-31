@@ -6,6 +6,8 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import %s.*;
+
 
 import rmi.message.FunctionParameter;
 
@@ -25,31 +27,28 @@ public class %s {
 	 *
 	 * @param percent
 	 *            - percentage of movement, null to ignore this parameter
-	 * @param returnValue
-	 *            - null to ignore returnvalue
 	 * @return returns marshalled object as xml string
-	 * @throws InterruptedException
 	 */
-	private String marshall(Integer percent, Integer returnValue) {
-		StringWriter writer = new StringWriter();
+	 private String marshall(Integer percent) {
+ 		StringWriter writer = new StringWriter();
 
-		FunctionParameter params = new FunctionParameter();
-		params.functionName = Thread.currentThread().getStackTrace()[2].getMethodName();
-		params.percent = percent;
-		params.returnValue = returnValue;
+ 		FunctionParameter params = new FunctionParameter();
+ 		params.robotName = %s.getInstance().getSelectedRobot();
+ 		params.functionName = Thread.currentThread().getStackTrace()[2].getMethodName();
+ 		params.percent = percent;
+ 		params.returnValue = %s;
 
-		try {
+ 		try {
+ 			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
+ 			jaxbMarshaller.marshal(params, writer);
 
-			// output pretty printed
-			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
+ 			TCPConnection.getInstance().getOutputQueueService().put(writer.toString());
+ 		} catch (JAXBException e) {
+ 			e.printStackTrace();
+ 		} catch (InterruptedException e) {
+ 			e.printStackTrace();
+ 		}
 
-			jaxbMarshaller.marshal(params, writer);
-
-		} catch (JAXBException e) {
-			e.printStackTrace();
-		}
-
-		//TCPConnection.getInstance().getOutputQueue().put(writer.toString());
-		return writer.toString();
-	}
+ 		return writer.toString();
+ 	}
 }

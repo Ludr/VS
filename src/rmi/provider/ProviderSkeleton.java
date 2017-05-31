@@ -46,7 +46,6 @@ public class ProviderSkeleton extends Thread {
 
 				unmarshall(TCPConnection.getInstance().getIntputQueueService().take());
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -62,21 +61,18 @@ public class ProviderSkeleton extends Thread {
 
 		switch (functionParameter.functionName) {
 		case "openGripper":
-			RoboControl.getInstance().openGripper(0);
+			RoboControl.getInstance().openGripper();
 			break;
 		case "closeGripper":
-			RoboControl.getInstance().closeGripper(0);
+			RoboControl.getInstance().closeGripper();
 			break;
 		case "moveHorizontalToPercent":
-			RoboControl.getInstance().moveHorizontalToPercent(0,functionParameter.percent);
+			RoboControl.getInstance().moveHorizontalToPercent(functionParameter.percent);
 			break;
 		case "moveVerticalToPercent":
-			RoboControl.getInstance().moveVerticalToPercent(0,functionParameter.percent);
+			RoboControl.getInstance().moveVerticalToPercent(functionParameter.percent);
 			break;
 		}
-		
-		
-		System.out.println(System.nanoTime() / 1000000);
 
 	}
 
