@@ -60,7 +60,6 @@ public static synchronized ConsumerSkeleton getInstance() {
 	public synchronized void unmarshall(String XMLinput) {
 		StringReader reader = new StringReader(XMLinput);
 
-		System.out.println("skeleton");
 		try {
 			functionParameter = (FunctionParameter) jaxbUnmarshaller.unmarshal(reader);
 

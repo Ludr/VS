@@ -11,7 +11,7 @@ import rmi.consumer.*;
 
 import rmi.message.FunctionParameter;
 
-public class ConsumerStub {
+public class ConsumerStub implements IIDL{
 
 	private JAXBContext jaxbContext;
 	private Marshaller jaxbMarshaller;

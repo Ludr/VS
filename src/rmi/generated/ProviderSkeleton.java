@@ -60,7 +60,6 @@ public static synchronized ProviderSkeleton getInstance() {
 	public synchronized void unmarshall(String XMLinput) {
 		StringReader reader = new StringReader(XMLinput);
 
-		
 		try {
 			functionParameter = (FunctionParameter) jaxbUnmarshaller.unmarshal(reader);
 

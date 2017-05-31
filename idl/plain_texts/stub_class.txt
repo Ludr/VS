@@ -11,7 +11,7 @@ import %s.*;
 
 import rmi.message.FunctionParameter;
 
-public class %s {
+public class %s implements IIDL{
 
 	private JAXBContext jaxbContext;
 	private Marshaller jaxbMarshaller;
