@@ -20,36 +20,124 @@ public class Parser {
 
 	public static void main(String[] args) throws Exception {
 
+		generateInterface("IIDL");
+
 		generateStub("ConsumerStub", "rmi.consumer", "GuiUpdater", "0");
 		generateStub("ProviderStub", "rmi.provider", "SessionControl", "1");
-		
+
 		generateSkeleton("GuiUpdater", "rmi.consumer", "ConsumerSkeleton");
 		generateSkeleton("RoboControl", "rmi.provider", "ProviderSkeleton");
-
 	}
-	
-	private static void generateSkeleton(String callerObject, String callerPackage, String objectName) throws Exception {
+
+	private static void generateInterface(String objectName) throws Exception {
+		// Read Plain Text Class
+		String fileName = "idl/plain_texts/interface.txt";
 		String pathName = "rmi.generated";
-		
-		String fileName = "idl/plain_texts/skeleton_class.txt";
 		String plainTextClass = readEntirefile(fileName);
-		
-		String singletonPattern = generateSkeletonSingleton(objectName);
-		
+
+		StringBuffer methodesBuffer = new StringBuffer();
+		methodesBuffer.append(generateInterfaceFunctions("idl/gripper_idl.json"));
+		methodesBuffer.append(generateInterfaceFunctions("idl/vertical_idl.json"));
+		methodesBuffer.append(generateInterfaceFunctions("idl/horizontal_idl.json"));
+
+
 		System.out.println("Now generating : " + objectName + ".java");
-		String classString = String.format(plainTextClass, pathName, callerPackage, objectName, singletonPattern, "TCPConnection", callerObject, callerObject);
+		String classString = String.format(plainTextClass, pathName, objectName,
+				methodesBuffer.toString());
 
 		writeToFile(objectName, classString);
 	}
-	
-	private static String generateSkeletonSingleton(String objectName) throws FileNotFoundException, IOException{
+
+	private static String generateInterfaceFunctions(String fileName) throws Exception {
+		String jsonText = readEntirefile(fileName);
+
+		fileName = "idl/plain_texts/interface_function.txt";
+		String plainTextMethode = readEntirefile(fileName);
+
+		JSONParser parser = new JSONParser();
+		JSONObject json = (JSONObject) parser.parse(jsonText);
+		JSONArray methodes = (JSONArray) json.get("Functions");
+
+		// Fill Description Arrays
+		List<String> methodeNames = new ArrayList<>();
+		Map<String, Map<Integer, Map<String, String>>> methodeParameterMap = new HashMap<>();
+		Map<String, String> methodeReturnMap = new HashMap<>();
+
+		for (Object obj : methodes) {
+			JSONObject jsonObj = (JSONObject) obj;
+			String methodeName = (String) jsonObj.get("name");
+			methodeNames.add(methodeName);
+			JSONArray parameterArray = (JSONArray) jsonObj.get("parameters");
+			Map<Integer, Map<String, String>> parameterPositionMap = new HashMap<>();
+
+			for (Object parameterObj : parameterArray) {
+				JSONObject jsonParameterObj = (JSONObject) parameterObj;
+				HashMap<String, String> parameterDescriptionMap = new HashMap<>();
+
+				Integer positionInteger = Integer.parseInt(jsonParameterObj.get("position").toString());
+				parameterDescriptionMap.put("type", (String) jsonParameterObj.get("type"));
+				parameterDescriptionMap.put("name", (String) jsonParameterObj.get("name"));
+
+				parameterPositionMap.put(positionInteger, parameterDescriptionMap);
+			}
+			methodeParameterMap.put(methodeName, parameterPositionMap);
+			methodeReturnMap.put(methodeName, (String) jsonObj.get("returnType"));
+		}
+
+		// Create Methode Strings and Class String
+		StringBuffer parametersBuffer;
+		StringBuffer methodesBuffer = new StringBuffer();
+
+		for (String methodeName : methodeNames) {
+			parametersBuffer = new StringBuffer();
+			Map<Integer, Map<String, String>> parameterPositionMap = methodeParameterMap.get(methodeName);
+			int i = 1;
+			Map<String, String> parameter = parameterPositionMap.get(new Integer(i++));
+
+			while (parameter != null) {
+				if (i > 2) {
+					parametersBuffer.append(", ");
+				}
+
+				parametersBuffer.append(parameter.get("type"));
+				parametersBuffer.append(" ");
+				parametersBuffer.append(parameter.get("name"));
+
+				parameter = parameterPositionMap.get(new Integer(i++));
+			}
+			String returnType = methodeReturnMap.get(methodeName);
+
+			methodesBuffer
+					.append(String.format(plainTextMethode, returnType, methodeName, parametersBuffer.toString()));
+		}
+		return methodesBuffer.toString();
+	}
+
+	private static void generateSkeleton(String callerObject, String callerPackage, String objectName)
+			throws Exception {
+		String pathName = "rmi.generated";
+
+		String fileName = "idl/plain_texts/skeleton_class.txt";
+		String plainTextClass = readEntirefile(fileName);
+
+		String singletonPattern = generateSkeletonSingleton(objectName);
+
+		System.out.println("Now generating : " + objectName + ".java");
+		String classString = String.format(plainTextClass, pathName, callerPackage, objectName, singletonPattern,
+				"TCPConnection", callerObject, callerObject);
+
+		writeToFile(objectName, classString);
+	}
+
+	private static String generateSkeletonSingleton(String objectName) throws FileNotFoundException, IOException {
 		String fileName = "idl/plain_texts/skeleton_singleton.txt";
 		String singletonString = readEntirefile(fileName);
 
 		return String.format(singletonString, objectName, objectName, objectName, objectName);
 	}
 
-	private static void generateStub(String objectName, String callerPackage, String robotReference, String messageType) throws FileNotFoundException, IOException, Exception {
+	private static void generateStub(String objectName, String callerPackage, String robotReference, String messageType)
+			throws FileNotFoundException, IOException, Exception {
 		// Read Plain Text Class
 		String fileName = "idl/plain_texts/stub_class.txt";
 		String pathName = "rmi.generated";

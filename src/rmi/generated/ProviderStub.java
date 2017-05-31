@@ -11,7 +11,7 @@ import rmi.provider.*;
 
 import rmi.message.FunctionParameter;
 
-public class ProviderStub {
+public class ProviderStub implements IIDL{
 
 	private JAXBContext jaxbContext;
 	private Marshaller jaxbMarshaller;
