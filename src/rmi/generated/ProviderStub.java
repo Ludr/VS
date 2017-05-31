@@ -6,27 +6,27 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-import rmi.consumer.*;
+import rmi.provider.*;
 
 
 import rmi.message.FunctionParameter;
 
-public class ConsumerStub {
+public class ProviderStub {
 
 	private JAXBContext jaxbContext;
 	private Marshaller jaxbMarshaller;
 
   // generate Singleton
-	private static ConsumerStub instance;
+	private static ProviderStub instance;
 
-public static synchronized ConsumerStub getInstance() {
+public static synchronized ProviderStub getInstance() {
   if (instance == null) {
-    instance = new ConsumerStub();
+    instance = new ProviderStub();
   }
   return instance;
 }
 
-private ConsumerStub() {
+private ProviderStub() {
   try {
     jaxbContext = JAXBContext.newInstance(FunctionParameter.class);
     jaxbMarshaller = jaxbContext.createMarshaller();
@@ -67,10 +67,10 @@ public int moveHorizontalToPercent(int percent) {
  		StringWriter writer = new StringWriter();
 
  		FunctionParameter params = new FunctionParameter();
- 		params.robotName = GuiUpdater.getInstance().getSelectedRobot();
+ 		params.robotName = SessionControl.getInstance().getSelectedRobot();
  		params.functionName = Thread.currentThread().getStackTrace()[2].getMethodName();
  		params.percent = percent;
- 		params.returnValue = 0;
+ 		params.returnValue = 1;
 
  		try {
  			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);

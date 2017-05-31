@@ -1,4 +1,4 @@
 public %s %s(%s) {
-    marshall(%s, null);
+    marshall(%s);
     %s
 }

@@ -43,7 +43,7 @@ public class SessionControl {
 		return instance;
 	}
 	
-	public String getRobotName() {
+	public String getSelectedRobot() {
 		return robotName;
 	}
 

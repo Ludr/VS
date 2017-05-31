@@ -61,32 +61,27 @@ public class ConsumerStub /* implemnts IDL interfaces */{
 	 * @param returnValue
 	 *            - null to ignore returnvalue
 	 * @return returns marshalled object as xml string
-	 * @throws InterruptedException
-	 * @throws JAXBException
 	 */
-	private String marshall(Integer percent, Integer returnValue) throws InterruptedException, Exception {
+	private String marshall(Integer percent, Integer returnValue) {
 		StringWriter writer = new StringWriter();
 
 		FunctionParameter params = new FunctionParameter();
-		//params.robotName = ?  TODO: Holen des aktuellen Roboternamens aus der GUI!
-
 		params.robotName = GuiUpdater.getInstance().getSelectedRobot();
 		params.functionName = Thread.currentThread().getStackTrace()[2].getMethodName();
 		params.percent = percent;
 		params.returnValue = returnValue;
 
 		try {
-
-			// output pretty printed
 			jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
-
 			jaxbMarshaller.marshal(params, writer);
 
+			TCPConnection.getInstance().getOutputQueueService().put(writer.toString());
 		} catch (JAXBException e) {
 			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
-
-		TCPConnection.getInstance().getOutputQueueService().put(writer.toString());
+		
 		return writer.toString();
 	}
 }

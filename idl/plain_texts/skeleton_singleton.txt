@@ -1,0 +1,19 @@
+private static %s instance;
+
+private %s() {
+  try {
+    jaxbContext = JAXBContext.newInstance(FunctionParameter.class);
+    jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+  } catch (Exception e) {
+    e.printStackTrace();
+  }
+
+}
+
+public static synchronized %s getInstance() {
+  if (instance == null) {
+    instance = new %s();
+    new Thread(instance).start();
+  }
+  return instance;
+}
