@@ -1,4 +1,4 @@
-package rmi.consumer;
+package mockup;
 
 import java.io.BufferedReader;
 import java.io.IOException;

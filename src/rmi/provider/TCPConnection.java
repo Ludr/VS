@@ -117,7 +117,7 @@ public class TCPConnection {
 			while (!isInterrupted()) {
 				try {
 					str = outqueue.take();
-					System.out.println("Provider sends : " + str);
+					//System.out.println("Provider sends : " + str);
 					out.println(str);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
@@ -140,12 +140,12 @@ public class TCPConnection {
 		public void run() {
 			while (!isInterrupted()) {
 				try {
-					System.out.println("Receiver Reading from Socket");
+					//System.out.println("Receiver Reading from Socket");
 					BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 					String inputLine = "";
 					while ((inputLine = in.readLine()) != null) {
 						TCPConnection.getInstance().intputQueueService.put(inputLine);
-						System.out.println("Provider receives : " + inputLine);
+						//System.out.println("Provider receives : " + inputLine);
 					}
 					System.out.println("Finished reading from Socket");
 				} catch (IOException e) {

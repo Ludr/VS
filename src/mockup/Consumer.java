@@ -1,4 +1,4 @@
-package rmi.consumer;
+package mockup;
 
 import javax.xml.bind.JAXBException;
 
@@ -15,47 +15,48 @@ public class Consumer implements ICaDSRMIConsumer, IIDLCaDSEV3RMIMoveGripper, II
 
 	public static CaDSRobotGUISwing gui;
 
-	private static rmi.generated.ConsumerStub consumerStub;
+	private static ConsumerStub consumerStub;
 
-	public static void main(String[] args) throws JAXBException {
+	public static void main(String[] args) throws JAXBException, InterruptedException {
 
 		//TCPConnection.ipAdress = args[0];
 		TCPConnection.ipAdress = "localhost";
 		TCPConnection comm = TCPConnection.getInstance();
 
 		// Start Gui and Stubs/Skeleton
-		ICaDSRobotGUIUpdater robotGuiUpdater = new RobotGuiUpdater();
 		GuiUpdater guiUpdater = GuiUpdater.getInstance();
-		consumerStub = rmi.generated.ConsumerStub.getInstance();
+		consumerStub = ConsumerStub.getInstance();
 
 		Consumer c = new Consumer();
-		rmi.generated.ConsumerSkeleton skel = rmi.generated.ConsumerSkeleton.getInstance();
+		ConsumerSkeleton skel = ConsumerSkeleton.getInstance();
 
-		gui = new CaDSRobotGUISwing(c, c, c, c, c);
+//		gui = new CaDSRobotGUISwing(c, c, c, c, c);
 		// gui.startGUIRefresh(1000);
 
 		// gui = new CaDSRobotGUISwing(c, rc, rc, rc, rc);
 		// gui.startGUIRefresh(1000);
 		RegisterService registry = new RegisterService();
 		registry.registerAtBroker("gui");
+		
+		
 	}
 
-	@Override
-	public void update(String arg0) {
-		GuiUpdater.getInstance().setSelectedRobot(arg0);
-		Consumer.gui.setHorizontalProgressbar(GuiUpdater.getInstance().getRobotData(arg0).getHorizontalPercent());
-		Consumer.gui.setVerticalProgressbar(GuiUpdater.getInstance().getRobotData(arg0).getVerticalPercent());
-		if (GuiUpdater.getInstance().getRobotData(arg0).isGrabbed() == false) {
-			Consumer.gui.setGripperOpen();
-		} else {
-			Consumer.gui.setGripperClosed();
-		}
-
-	}
+//	@Override
+//	public void update(String arg0) {
+//		GuiUpdater.getInstance().setSelectedRobot(arg0);
+//		Consumer.gui.setHorizontalProgressbar(GuiUpdater.getInstance().getRobotData(arg0).getHorizontalPercent());
+//		Consumer.gui.setVerticalProgressbar(GuiUpdater.getInstance().getRobotData(arg0).getVerticalPercent());
+//		if (GuiUpdater.getInstance().getRobotData(arg0).isGrabbed() == false) {
+//			Consumer.gui.setGripperOpen();
+//		} else {
+//			Consumer.gui.setGripperClosed();
+//		}
+//
+//	}
 
 	@Override
 	public void register(ICaDSRobotGUIUpdater arg0) {
-		//System.out.println("HelloRegister");
+		System.out.println("HelloRegister");
 
 	}
 
@@ -111,6 +112,12 @@ public class Consumer implements ICaDSRMIConsumer, IIDLCaDSEV3RMIMoveGripper, II
 	public int openGripper(int arg0) throws Exception {
 		consumerStub.openGripper();
 		return 0;
+	}
+
+	@Override
+	public void update(String arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

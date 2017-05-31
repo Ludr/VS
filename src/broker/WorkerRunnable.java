@@ -86,13 +86,13 @@ public class WorkerRunnable implements Runnable {
 	
 	
 	private synchronized void processInputRegistry(Socket sc,String inputline) throws Exception {
-		System.out.println("processInputRegisry");
+		//System.out.println("processInputRegisry");
 
 		
 
 		RegisterMessage message = unmarshallRegisterMessage(inputline);
 
-		System.out.println(message.name);
+		//System.out.println(message.name);
 
 		if (message.name.equals("gui")) {
 			for (int i = 0; i < offeredServices.length; i++) {
@@ -102,7 +102,7 @@ public class WorkerRunnable implements Runnable {
 					break;
 				}
 			}
-			System.out.println(offeredServices[0].getRobotName());
+			//System.out.println(offeredServices[0].getRobotName());
 			//System.out.println(offeredServices[1].getRobotName());
 			handleServiceDiscoveryAll(sc);
 
@@ -187,9 +187,9 @@ public class WorkerRunnable implements Runnable {
 
 		String message = writer.toString();
 
-		System.out.println("Nachricht an Client:" + message);
+		//System.out.println("Nachricht an Client:" + message);
 
-		System.out.println(message.length());
+		//System.out.println(message.length());
 
 		
 
@@ -207,7 +207,7 @@ public class WorkerRunnable implements Runnable {
 	 * @throws IOException
 	 */
 	private synchronized void handleServiceDiscoveryAll(Socket socket) throws IOException {
-		System.out.println("handleServiceDiscovery");
+		//System.out.println("handleServiceDiscovery");
 		
 		PrintWriter out = null;
 
@@ -245,9 +245,9 @@ public class WorkerRunnable implements Runnable {
 
 			String message = writer.toString();
 
-			System.out.println("Nachricht an Client:" + message);
+			//System.out.println("Nachricht an Client:" + message);
 
-			System.out.println(message.length());
+			//System.out.println(message.length());
 
 			
 
@@ -275,7 +275,7 @@ public class WorkerRunnable implements Runnable {
 	 * @throws Exception
 	 */
 	private synchronized void  processInputService(Socket sc,String inputline) throws Exception {
-		System.out.println("processInputService");
+		//System.out.println("processInputService");
 		
 
 		FunctionParameter functionParameter = unmarshallServiceMessage(inputline);
@@ -371,7 +371,7 @@ public class WorkerRunnable implements Runnable {
 	public static synchronized RegisterMessage unmarshallRegisterMessage(String XMLinput)
 			throws Exception {
 
-		System.out.println("unmarshallRegisterMessage");
+		//System.out.println("unmarshallRegisterMessage");
 
 		StringReader reader = new StringReader(XMLinput);
 

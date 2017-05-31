@@ -1,5 +1,5 @@
 // package
-package %s;
+package mockup;
 
 import java.io.StringReader;
 import java.lang.reflect.Method;
@@ -8,14 +8,14 @@ import javax.xml.bind.*;
 
 import rmi.message.FunctionParameter;
 
-import %s.*;
+import rmi.consumer.*;
 
 
 /*
  *
  *
  */
-public class %s extends Thread {
+public class ConsumerSkeleton extends Thread {
 
 	private FunctionParameter functionParameter;
 	private JAXBContext jaxbContext;
@@ -26,12 +26,31 @@ public class %s extends Thread {
 	}
 
 	// Singleton
-	%s
+	private static ConsumerSkeleton instance;
+
+private ConsumerSkeleton() {
+  try {
+    jaxbContext = JAXBContext.newInstance(FunctionParameter.class);
+    jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+  } catch (Exception e) {
+    e.printStackTrace();
+  }
+
+}
+
+public static synchronized ConsumerSkeleton getInstance() {
+  if (instance == null) {
+    instance = new ConsumerSkeleton();
+    new Thread(instance).start();
+  }
+  return instance;
+}
+
 
 	public void run() {
 		while (true) {
 			try {
-				unmarshall(%s.getInstance().getIntputQueueService().take());
+				unmarshall(TCPConnection.getInstance().getIntputQueueService().take());
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -41,15 +60,14 @@ public class %s extends Thread {
 	public synchronized void unmarshall(String XMLinput) {
 		StringReader reader = new StringReader(XMLinput);
 
-		System.out.println("skeleton");
-		try {
+				try {
 			functionParameter = (FunctionParameter) jaxbUnmarshaller.unmarshal(reader);
 
-			Class<?> c = %s.class;
+			Class<?> c = Mock.class;
 			Class[] argTypes = functionParameter.percent == null ? null : new Class[] { int.class };
 			Method method = c.getDeclaredMethod(functionParameter.functionName, argTypes);
 			Integer[] mainArgs = functionParameter.percent == null ? null : new Integer[] { functionParameter.percent };
-			method.invoke(%s.getInstance(), (Object[]) mainArgs);
+			method.invoke(Mock.getInstance(), (Object[]) mainArgs);
 
 			// production code should handle these exceptions more gracefully
 		} catch (Exception x) {
