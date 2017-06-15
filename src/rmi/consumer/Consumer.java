@@ -24,7 +24,6 @@ public class Consumer implements ICaDSRMIConsumer, IIDLCaDSEV3RMIMoveGripper, II
 		TCPConnection comm = TCPConnection.getInstance();
 
 		// Start Gui and Stubs/Skeleton
-		ICaDSRobotGUIUpdater robotGuiUpdater = new RobotGuiUpdater();
 		GuiUpdater guiUpdater = GuiUpdater.getInstance();
 		consumerStub = rmi.generated.ConsumerStub.getInstance();
 

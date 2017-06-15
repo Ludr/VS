@@ -67,7 +67,7 @@ public int moveHorizontalToPercent(int percent) {
  		StringWriter writer = new StringWriter();
 
  		FunctionParameter params = new FunctionParameter();
- 		params.robotName = GuiUpdater.getInstance().getSelectedRobot();
+ 		params.robotName = "robot1";//GuiUpdater.getInstance().getSelectedRobot();
  		params.functionName = Thread.currentThread().getStackTrace()[2].getMethodName();
  		params.percent = percent;
  		params.returnValue = 0;

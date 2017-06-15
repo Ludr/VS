@@ -47,8 +47,6 @@ public class GuiUpdater extends Thread {
 			e.printStackTrace();
 		}
 		
-		RobotGuiUpdater robotGuiUpdater = new RobotGuiUpdater();
-
 	}
 
 	public void run() {
@@ -122,8 +120,8 @@ public class GuiUpdater extends Thread {
 
 		}
 
-		Consumer.gui.addService(newRobot.name);
-		Consumer.gui.setChoosenService(newRobot.name);
+		//Consumer.gui.addService(newRobot.name);
+		//Consumer.gui.setChoosenService(newRobot.name);
 
 	}
 
