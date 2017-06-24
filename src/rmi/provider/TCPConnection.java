@@ -80,12 +80,14 @@ public class TCPConnection {
 			serviceSocket = new Socket(SessionControl.getInstance().ipAdress, 8888);
 		} catch (IOException e) {
 			e.printStackTrace();
+			System.exit(1);
 		}
 
 		try {
 			registrySocket = new Socket(SessionControl.getInstance().ipAdress, 8889);
 		} catch (IOException e) {
 			e.printStackTrace();
+			System.exit(1);
 		}
 
 		new Thread(new Sender(registrySocket, outputQueueRegistry)).start();
@@ -151,9 +153,11 @@ public class TCPConnection {
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+					interrupt();
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+					interrupt();
 				}
 			}
 		}

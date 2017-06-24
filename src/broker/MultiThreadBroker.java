@@ -11,8 +11,6 @@ import javax.xml.bind.JAXBException;
 public class MultiThreadBroker implements Runnable{
 
 	
-	
-	
     protected int          serverPort;
     protected ServerSocket serverSocket = null;
     protected boolean      isStopped    = false;

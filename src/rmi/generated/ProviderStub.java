@@ -78,6 +78,7 @@ public int moveHorizontalToPercent(int percent) {
 
  			TCPConnection.getInstance().getOutputQueueService().put(writer.toString());
  		} catch (JAXBException e) {
+ 			System.err.println("XML string: " + writer.toString());
  			e.printStackTrace();
  		} catch (InterruptedException e) {
  			e.printStackTrace();

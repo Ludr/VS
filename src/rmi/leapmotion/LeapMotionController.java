@@ -3,6 +3,13 @@ package rmi.leapmotion;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+
+import java.io.StringReader;
+import java.lang.Math;
+
 import com.leapmotion.leap.CircleGesture;
 import com.leapmotion.leap.Controller;
 import com.leapmotion.leap.Frame;
@@ -19,23 +26,32 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import rmi.consumer.TCPConnection;
+import rmi.consumer.connectedRobot;
 import rmi.generated.ConsumerStub;
+import rmi.message.RegisterMessage;
 
-class LeapMotionController extends Listener {
+public class LeapMotionController extends Listener {
 	private final int start_x = -100;
 	private final int start_y = 150;
 	private final int end_x = 100;
-	private final int end_y = 300;
+	private final int end_y = 400;
 	private final int range = 100;
-
+	
+	static int maxRobots = 20;
+	
 	public StringProperty horizontalString = new SimpleStringProperty("0");
 	public StringProperty verticalString = new SimpleStringProperty("0");
 
 	public StringProperty pinchStrengthString = new SimpleStringProperty("0.0");
 	public StringProperty grabStrengthString = new SimpleStringProperty("0.0");
 
+	public static String currentRobotString = "robot1";
+	
 	private double x = 0;
 	private double y = 0;
+	
+	private int current_horizontal = 0;
+	private int current_vertical = 0;
 
 	private int horizontalPercent = 0;
 	private int verticalPercent = 0;
@@ -49,6 +65,11 @@ class LeapMotionController extends Listener {
 	
 	private double pinchStrength = 0;
 	private double grabStrength = 0;
+	
+	private int currentRobotIndex = 0;
+	public static connectedRobot[] connectedRobots = new connectedRobot[maxRobots];
+	Unmarshaller jaxbUnmarshaller;
+	JAXBContext jaxbContext;
 
 	public void onInit(Controller controller) {
 		System.out.println("Initialized");
@@ -57,11 +78,16 @@ class LeapMotionController extends Listener {
 	public void onConnect(Controller controller) {
 		System.out.println("Connected");
 		controller.enableGesture(Gesture.Type.TYPE_CIRCLE);
-
 		TimerTask action = new TimerTask() {
 			public void run() {
-				ConsumerStub.getInstance().moveHorizontalToPercent(horizontalPercent);
-				ConsumerStub.getInstance().moveVerticalToPercent(verticalPercent);
+				if (Math.abs(current_horizontal - horizontalPercent) > 5){
+					ConsumerStub.getInstance().moveHorizontalToPercent(range - horizontalPercent);
+					current_horizontal = horizontalPercent;
+				}
+				if (Math.abs(current_vertical - verticalPercent) > 5){
+					ConsumerStub.getInstance().moveVerticalToPercent(verticalPercent);
+					current_vertical = verticalPercent;
+				}
 				if (grabStrength > 0.95){
 					ConsumerStub.getInstance().closeGripper();
 				} else if (grabStrength < 0.05){
@@ -71,7 +97,7 @@ class LeapMotionController extends Listener {
 
 		};
 		Timer timedCaller = new Timer();
-		timedCaller.schedule(action, 10000, 1000);
+		timedCaller.schedule(action, 500, 500);
 	}
 
 	public void onDisconnect(Controller controller) {
@@ -106,11 +132,11 @@ class LeapMotionController extends Listener {
 			pinchStrength = hand.pinchStrength();
 			grabStrength = hand.grabStrength();
 
-//			if (pinchStrength > 0.95 && grabStrength < 0.1 && !isPinched) {
+//			if (pinchStrength > 0.80 && grabStrength < 0.2 && !isPinched) {
 //				isPinched = true;
 //				// call to horitontal Percent
 //				System.out.println("Method Call: move to horizontal " + horizontalPercent);
-//				ConsumerStub.getInstance().moveHorizontalToPercent(horizontalPercent);
+//				ConsumerStub.getInstance().moveHorizontalToPercent(range-horizontalPercent);
 //				// call to vertical percent
 //				System.out.println("Method Call: move to vertical " + verticalPercent);
 //				ConsumerStub.getInstance().moveVerticalToPercent(verticalPercent);
@@ -150,9 +176,9 @@ class LeapMotionController extends Listener {
 			case TYPE_CIRCLE:
 				CircleGesture circle = new CircleGesture(gesture);
 				if (lastCircle != circle.id()) {
+					lastCircle = circle.id();
 					totalSweptAngle = 0;
 				}
-
 				// Calculate clock direction using the angle between circle
 				// normal and pointable
 				boolean clockwise;
@@ -170,18 +196,21 @@ class LeapMotionController extends Listener {
 					totalSweptAngle += (circle.progress() - previousUpdate.progress()) * 2 * Math.PI;
 				}
 
-				if (totalSweptAngle / 360 > 1) {
+//				System.out.println(" Circle id: " + circle.id() + ", clockwise: " + clockwise + ", amount : " + totalSweptAngle);
+				if (totalSweptAngle > 4) {
 					if (clockwise) {
 						// get next robot
-						System.out.println("Method Call: change to next robot");
+						currentRobotString = "robot2";
+						System.out.println("Method call: change to next robot -> " + currentRobotString);
+						totalSweptAngle = -2;
 					} else {
 						// get previous robot
-						System.out.println("Method Call: change to previous robot");
+						currentRobotString = "robot1";
+						System.out.println("Method call: change to previous robot -> " + currentRobotString);
+						totalSweptAngle = -2;
 					}
 				}
 
-				// System.out.println(" Circle id: " + circle.id() + ",
-				// direction: " + clockwiseness);
 				break;
 			default:
 				System.out.println("Unknown gesture type.");
@@ -190,9 +219,54 @@ class LeapMotionController extends Listener {
 		}
 
 		// clear TCP Queue
-		TCPConnection.getInstance().getIntputQueueService().clear();
+		String registyMessage = TCPConnection.getInstance().getIntputQueueService().poll();
+		if(registyMessage != null) {
+			unmarshall(registyMessage);
+		}
 	}
 
+	public void unmarshall(String XMLinput) {
+
+		StringReader reader = new StringReader(XMLinput);
+
+		RegisterMessage newRobot = null;
+		try {
+			newRobot = (RegisterMessage) jaxbUnmarshaller.unmarshal(reader);
+		} catch (JAXBException e) {
+			e.printStackTrace();
+		}
+
+		System.out.println(newRobot.name);
+
+		// Consumer.gui.setChoosenService(newRobot.name);
+
+		for (int i = 0; i < connectedRobots.length; i++) {
+
+			if (connectedRobots[i] == null) {
+				connectedRobots[i] = new connectedRobot(newRobot.name, 0, 0, false);
+				System.out.println("Neuer Roboter! " + connectedRobots[i].getRobotName());
+				break;
+
+			} else if (connectedRobots[i].getRobotName() == newRobot.name) {
+				System.out.println("Duplicate Robot received");
+				break;
+			}
+
+		}
+	}
+	
+//	private String nextRobot(){
+//		currentRobotIndex = currentRobotIndex < maxRobots-1 ? currentRobotIndex++ : 0; 
+//		setSelectedRobot(connectedRobots[currentRobotIndex].getRobotName());
+//		return getSelectedRobot();
+//	}
+//	
+//	private String previousRobot(){
+//		currentRobotIndex = currentRobotIndex > 0 ? currentRobotIndex-- : maxRobots-1; 
+//		setSelectedRobot(connectedRobots[currentRobotIndex].getRobotName());
+//		return getSelectedRobot();
+//	}
+	
 	private long map(long x, long in_min, long in_max, long out_min, long out_max) {
 		return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 	}

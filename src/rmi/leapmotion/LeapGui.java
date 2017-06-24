@@ -13,12 +13,13 @@ import rmi.consumer.TCPConnection;
 
 public class LeapGui extends Application {
 
-	static private LeapMotionController leapMotion;
+	static public LeapMotionController leapMotion;
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
 		// TCPConnection.ipAdress = args[0];
+//		TCPConnection.ipAdress = "172.16.1.64";
 		TCPConnection.ipAdress = "localhost";
 		TCPConnection comm = TCPConnection.getInstance();
 
@@ -50,6 +51,7 @@ public class LeapGui extends Application {
 		
 		Label yText = new Label("y : ");
 		Label yValue = new Label();
+		
 		yValue.textProperty().bind(leapMotion.verticalString);
 		gp.add(yText, 0, 1);
 		gp.add(yValue, 1, 1);
